@@ -11,7 +11,7 @@ public class WeaponManager {
     }
 
     private void registerAsObserver() {
-        game.addObserver(new PlayerAttackObserver() {
+        game.addMoveObserver(new PlayerMoveObserver() {
             @Override
             public void stateChanged() {
                 selectPlayerWeapon();
@@ -22,8 +22,8 @@ public class WeaponManager {
     private double[] assignRandomOpponentDamage(double damage) {
         Random random = new Random();
         int index = random.nextInt(3);
-        double[] damagePercentages = {};
-        for (int i = 0; i < 3; i++) {
+        double[] damagePercentages = new double[3];
+        for (int i = 0;i < 3;i++) {
             if (index == i) {
                 damagePercentages[i] = damage;
             }
@@ -74,13 +74,13 @@ public class WeaponManager {
                 System.out.println("Stone hammer");
                 Weapon weapon = new Weapon();
                 double[] damagePercentages = {0.8,0.8,0.8};
-                weapon.assignWeapon("fire staff", damagePercentages);
+                weapon.assignWeapon("stone hammer", damagePercentages);
                 return weapon;
 
             }
         }
-        if (fillConditions.getSecondsTaken() <= 20) {
-            if (fillConditions.getSecondsTaken() <= 10) {
+        if (fillConditions.getSecondsTaken() <= 30) {
+            if (fillConditions.getSecondsTaken() <= 20) {
                 Weapon weapon = new Weapon();
                 double[] damagePercentages = assignRandomOpponentDamage(1.0);
                 weapon.assignWeapon("lightning wand", damagePercentages);

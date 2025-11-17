@@ -21,8 +21,6 @@ public class TextUI {
         long startTime = System.nanoTime();
 
         while (gameRunning()) {
-            System.out.println("here");
-            //long startTime = System.nanoTime();
             doPlayerTurn();
             if (game.playerReadyForAttack()) {
                 //isAttackDone = true;
@@ -33,7 +31,7 @@ public class TextUI {
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + durationSeconds + " seconds");
                 game.attackOpponent();
-                game.replaceBoardIfFilled();
+                game.resetGameConditions();
             }
         displayHealthOpponents();
         displayBoard(false);
@@ -57,17 +55,25 @@ public class TextUI {
     public void displayHealthOpponents() {
         List<Opponent> opponents = game.getOpponents();
         opponents.stream().forEach(opponent -> {
-            System.out.print("[ " + opponent.getHealth() + " ]");
+            String format = "[" + opponent.getHealth() + "]";
+            String output = String.format("%-7s", format);
+            System.out.print(output);
         });
     }
     public void displayPlayerInfo() {
         Player player = game.getPlayer();
-        System.out.println("[ " + player.getPlayerHealth() + " ]       Fill Strength: " );
+        String format = "[" + player.getPlayerHealth() + "]";
+        String firstHalf = String.format("%-7s", format);
+
+        String secondHalf = "Fill Strength: " + game.fillStrength;
+        System.out.println(firstHalf + secondHalf);
+
+        //System.out.println("[ " + player.getPlayerHealth() + " ]       Fill Strength: " + game.fillStrength);
     }
     //TODO fix the column format
     public void displayBoard(boolean revealBoard) {
         System.out.println();
-        System.out.println("Game Board:");
+        //System.out.println("Game Board:");
         // Print rows:
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
@@ -75,10 +81,14 @@ public class TextUI {
                 Cell cell = game.getCellState(row, col);
                 int symbol = cell.getCurrentNumber();
                 if(cell.isFill()){
-                    output +=  FILL_SYMBOL  + symbol + FILL_SYMBOL + "   ";
+                    String format = FILL_SYMBOL  + symbol + FILL_SYMBOL;
+                    output += String.format("%-7s", format);
+                    //output +=  FILL_SYMBOL  + symbol + FILL_SYMBOL + "   ";
                 }
                 else {
-                    output += NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL + "   ";
+                    String format = NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL;
+                    output += String.format("%-7s", format);
+
                 }
             }
             System.out.println(output);

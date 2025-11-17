@@ -7,12 +7,13 @@ import java.util.Random;
 
 public class Game {
     public int playerHealth = 600;
-    private int fillStrength = 0;
+    public int fillStrength = 0;
     private Player player = new Player();
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard();
     private FillConditions fillConditions = new FillConditions();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
+    private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
 
     public Game() {
         //player.equipWeapon(new NullWeapon());
@@ -44,6 +45,7 @@ public class Game {
         fillConditions.setNumFills(fillConditions.getNumFills() + 1);
         fillConditions.addCellValue(cell.getCurrentNumber());
         fillStrength += cell.getCurrentNumber();
+        notifyMoveObservers();
     }
     public void updateFillTime(double durationSeconds) {
         fillConditions.setSecondsTaken(durationSeconds);
@@ -91,8 +93,11 @@ public class Game {
         throw new IllegalArgumentException();
     }
 
-    public void replaceBoardIfFilled() {
+    public void resetGameConditions() {
         if (board.isWholeBoardFill()) {
+            board = new GameBoard();
+            fillStrength = 0;
+            fillConditions = new FillConditions();
         }
     }
     public boolean playerReadyForAttack() {
@@ -108,6 +113,8 @@ public class Game {
         List<Double> damages = equippedWeapon.getDamageOpponents();
         for (int i = 0;i<damages.size();i++){
             System.out.println("player attacks opponent " + i + " with " + damages.get(i));
+            Opponent curOp = opponents.get(i);
+            curOp.takeDamage(200);
         }
         System.out.println("Player is attacking opponent with " + fillStrength + " damage applied with " + equippedWeapon.getWeaponName());
 
@@ -138,6 +145,14 @@ public class Game {
     }
     private void notifyObservers() {
         for (PlayerAttackObserver observer : observers) {
+            observer.stateChanged();
+        }
+    }
+    public void addMoveObserver(PlayerMoveObserver observer) {
+        moveObservers.add(observer);
+    }
+    private void notifyMoveObservers() {
+        for (PlayerMoveObserver observer : moveObservers) {
             observer.stateChanged();
         }
     }

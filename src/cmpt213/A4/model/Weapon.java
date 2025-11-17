@@ -29,7 +29,7 @@ class Weapon implements weaponAbilities{
 
     @Override
     public void assignWeapon(String weaponName, double[] damagePercentages) {
-        System.out.println("MyClass is doing something!");
+        //System.out.println("MyClass is doing something!");
         this.weaponName = weaponName;
         for (int i = 0 ; i < damagePercentages.length ; i++) {
             this.percentDamageOpponents.add(damagePercentages[i]);
