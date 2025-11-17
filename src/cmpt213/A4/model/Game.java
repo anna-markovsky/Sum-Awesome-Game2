@@ -15,12 +15,13 @@ public class Game {
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
 
     public Game() {
-
+        generateOpponents();
     }
 
     public FillConditions getFillConditions() {
         return fillConditions;
     }
+
     public void generateOpponents() {
         opponents = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
@@ -35,21 +36,34 @@ public class Game {
     public Cell getCellState(int row, int col) {
         return board.getCell(row, col);
     }
+
     public void updateFill(Cell cell) {
         cell.setFill(true);
         fillConditions.setNumFills(fillConditions.getNumFills() + 1);
         fillConditions.addCellValue(cell.getCurrentNumber());
         fillStrength += cell.getCurrentNumber();
     }
+
+    public int getFillStrength(){
+        return fillStrength;
+    }
+
+    public int getPlayerHealth(){
+        return playerHealth;
+    }
+
     public void updateFillTime(double durationSeconds) {
         fillConditions.setSecondsTaken(durationSeconds);
     }
+
     public void updateMiddleCell(Cell cell) {
         board.replaceMiddleCell(cell);
     }
+
     public void updateMatchingCellPosition(Cell cell) {
         board.replaceMatchingCell(cell);
     }
+
     //function for player move
     //first check if there are any matching cells
     //if 1 matching cell, add current cell to fill, and replace middle with matching cell
@@ -91,7 +105,9 @@ public class Game {
         if (board.isWholeBoardFill()) {
             this.board = new GameBoard();
         }
+        fillStrength = 0;
     }
+
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
             System.out.println("Player is attacking opponent with " + fillStrength + "damage applied");
@@ -100,8 +116,10 @@ public class Game {
         }
         return false;
     }
-    public void attackOpponent() {
+
+    public void attackOpponent(int col) {
         System.out.println("Player is attacking opponent with " + fillStrength + " damage applied");
+        opponents.get(col).takeDamage(fillStrength);
         notifyObservers();
     }
 
@@ -109,6 +127,7 @@ public class Game {
         //TODO Create this method
         return false;
     }
+
     public boolean hasOpponentWon() {
         return player.didPlayerLose();
     }
@@ -125,5 +144,4 @@ public class Game {
             observer.stateChanged();
         }
     }
-
 }

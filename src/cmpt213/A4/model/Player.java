@@ -29,8 +29,8 @@ public class Player {
     public int getPlayerHealth(){
         return health;
     }
+
     public boolean didPlayerLose(){
         return health <= 0;
     }
-
 }
