@@ -18,7 +18,7 @@ public class WeaponManager {
             }
         });
     }
-//TODO handle avoiding selecting dead opponents
+//TODO handle avoiding selecgting dead opponents
     private double[] assignRandomOpponentDamage(double damage) {
         Random random = new Random();
         int index = random.nextInt(3);

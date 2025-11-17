@@ -24,14 +24,15 @@ public class Player {
     }
 
     public void decreaseHealth(int damageReceived){
+
         this.health -= damageReceived;
     }
 
     public int getPlayerHealth(){
         return health;
     }
-
     public boolean didPlayerLose(){
         return health <= 0;
     }
+
 }

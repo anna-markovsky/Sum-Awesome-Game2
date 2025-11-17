@@ -25,8 +25,10 @@ public class StatsTracker {
     }
     public void updateAttacks() {
         this.damageDone += game.fillStrength;
+        //this.damageReceived += game.getPlayer().getPlayerHealth();
         totalDamage.put("Done",damageDone);
         //Add opponent damage here
+        totalDamage.put("Received", damageReceived);
     }
     public void updateEquipment() {
         Weapon weapon = game.getPlayer().getWeapon();
@@ -71,7 +73,7 @@ public class StatsTracker {
         System.out.println(events.get(index) + " " + damageDone);
         index++;
         for (String i : totalDamage.keySet()) {
-            System.out.println("equipment: " + i + " Activated: " + equipmentActivations.get(i));
+            System.out.println(i + " " +totalDamage.get(i));
         }
         System.out.println(events.get(index) + " " + fillsCompleted);
         /*for (String i : equipmentActivations.keySet()) {
