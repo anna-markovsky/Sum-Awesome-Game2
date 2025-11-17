@@ -55,6 +55,7 @@ public class GameBoard {
         board[MIDDLE_INDEX_ROW][MIDDLE_INDEX_COL] = cell;
 
     }
+
     public void replaceMatchingCell(Cell cell) {
         int row = cell.getRowIndex();
         int col = cell.getColumnIndex();
@@ -63,6 +64,7 @@ public class GameBoard {
         newCell.setFill(true);
         board[row][col] = newCell;
     }
+
     public boolean isWholeBoardFill(){
         for  (int row = 0; row < NUM_ROWS; row++) {
             for  (int col = 0; col < NUM_COLS; col++) {
@@ -77,5 +79,4 @@ public class GameBoard {
         }
         return true;
     }
-
 }

@@ -1,6 +1,10 @@
 package cmpt213.A4.userinterface;
 
-import cmpt213.A4.model.*;
+import cmpt213.A4.model.Cell;
+import cmpt213.A4.model.Game;
+import cmpt213.A4.model.GameBoard;
+import cmpt213.A4.model.Opponent;
+
 
 import java.util.List;
 import java.util.Scanner;
@@ -21,7 +25,11 @@ public class TextUI {
         long startTime = System.nanoTime();
 
         while (gameRunning()) {
-            doPlayerTurn();
+            System.out.println("here");
+            boolean isAttackDone = false;
+            //long startTime = System.nanoTime();
+            Cell lastCell = doPlayerTurn();
+
             if (game.playerReadyForAttack()) {
                 //isAttackDone = true;
                 //doOpponentTurn();
@@ -30,11 +38,15 @@ public class TextUI {
                 double durationSeconds = (double) elapsedTimeNanos / 1_000_000_000.0;
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + durationSeconds + " seconds");
+                //game.attackOpponent(lastCell.getColumnIndex());
+                game.replaceBoardIfFilled();
+
                 game.attackOpponent();
                 game.resetGameConditions();
             }
         displayHealthOpponents();
         displayBoard(false);
+
         displayPlayerInfo();
 
         doWonOrLost();
@@ -73,7 +85,11 @@ public class TextUI {
     //TODO fix the column format
     public void displayBoard(boolean revealBoard) {
         System.out.println();
-        //System.out.println("Game Board:");
+        //List<Opponent> opps = game.getOpponents();
+        //for(int i = 0; i < 3; i++){
+        //    System.out.print("[" + opps.get(i).getHealth() + "] ");
+        //}
+
         // Print rows:
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
@@ -94,6 +110,7 @@ public class TextUI {
             System.out.println(output);
             System.out.println();
         }
+        System.out.println("[" + game.getPlayerHealth() + "] Fill Strength: " + game.getFillStrength());
     }
 
     private int getPlayerMove() {
@@ -129,7 +146,8 @@ public class TextUI {
             }
         }
     }
-    private void doPlayerTurn() {
+
+    private Cell doPlayerTurn() {
         int sum = getPlayerMove();
         try {
             Cell matchingCell = game.getMatchingCell(sum);
@@ -139,11 +157,14 @@ public class TextUI {
             game.updateMatchingCellPosition(matchingCell);
 
             System.out.print("Player Turn was successful. ");
+            return matchingCell;
         }
         catch(IllegalArgumentException e) {
             System.out.println("Invalid sum. Opponent will attack.");
         }
+        return null;
     }
+
     private void doWonOrLost() {
         if (game.hasUserWon()) {
             System.out.println("Congratulations! You won!");
@@ -154,5 +175,4 @@ public class TextUI {
         }
         displayBoard(true);
     }
-
 }

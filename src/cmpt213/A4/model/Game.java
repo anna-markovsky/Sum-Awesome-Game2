@@ -16,6 +16,8 @@ public class Game {
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
 
     public Game() {
+        generateOpponents();
+
         //player.equipWeapon(new NullWeapon());
         this.opponents = generateOpponents();
     }
@@ -25,13 +27,13 @@ public class Game {
     public FillConditions getFillConditions() {
         return fillConditions;
     }
-   public List<Opponent> generateOpponents() {
-       List<Opponent> opponents = new ArrayList<>();
-       for (int i = 0; i < 3; i++) {
-           opponents.add(new Opponent(200, 30));
-       }
-       return opponents;
-   }
+
+    public void generateOpponents() {
+        opponents = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            opponents.add(new Opponent(200, 30));
+        }
+    }
 
     public List<Opponent> getOpponents() {
         return opponents;
@@ -40,6 +42,7 @@ public class Game {
     public Cell getCellState(int row, int col) {
         return board.getCell(row, col);
     }
+
     public void updateFill(Cell cell) {
         cell.setFill(true);
         fillConditions.setNumFills(fillConditions.getNumFills() + 1);
@@ -47,15 +50,27 @@ public class Game {
         fillStrength += cell.getCurrentNumber();
         notifyMoveObservers();
     }
+
+    public int getFillStrength(){
+        return fillStrength;
+    }
+
+    public int getPlayerHealth(){
+        return playerHealth;
+    }
+
     public void updateFillTime(double durationSeconds) {
         fillConditions.setSecondsTaken(durationSeconds);
     }
+
     public void updateMiddleCell(Cell cell) {
         board.replaceMiddleCell(cell);
     }
+
     public void updateMatchingCellPosition(Cell cell) {
         board.replaceMatchingCell(cell);
     }
+
     //function for player move
     //first check if there are any matching cells
     //if 1 matching cell, add current cell to fill, and replace middle with matching cell
@@ -99,7 +114,9 @@ public class Game {
             fillStrength = 0;
             fillConditions = new FillConditions();
         }
+        fillStrength = 0;
     }
+
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
             notifyObservers();
@@ -107,6 +124,7 @@ public class Game {
         }
         return false;
     }
+
 
     public void attackOpponent() {
         Weapon equippedWeapon = player.getWeapon();
@@ -131,6 +149,7 @@ public class Game {
         }
         return (numOpponentsDead == 3);
     }
+
     public boolean hasOpponentWon() {
 
         return player.didPlayerLose();
@@ -148,6 +167,7 @@ public class Game {
             observer.stateChanged();
         }
     }
+
     public void addMoveObserver(PlayerMoveObserver observer) {
         moveObservers.add(observer);
     }
