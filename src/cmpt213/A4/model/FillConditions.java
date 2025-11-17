@@ -8,12 +8,12 @@ public class FillConditions {
     private int numFills;
     private boolean isAscending;
     private boolean isDescending;
+    private int lastSelectedColIndex;
 
     public FillConditions(){
         //this.selectedCellValues = new int[0];
         this.secondsTaken = 0.0;
         this.numFills = 0;
-
         this.isAscending = false;
         this.isDescending = false;
     }
@@ -23,7 +23,6 @@ public class FillConditions {
         return secondsTaken;
     }
     public void setSecondsTaken(double secondsTaken) {
-
         this.secondsTaken = secondsTaken;
     }
 
@@ -34,6 +33,12 @@ public class FillConditions {
     public void setNumFills(int numFills) {
 
         this.numFills = numFills;
+    }
+    public int getLastSelectedColIndex() {
+        return lastSelectedColIndex;
+    }
+    public void setLastSelectedColIndex(int lastSelectedColIndex) {
+        this.lastSelectedColIndex = lastSelectedColIndex;
     }
     public void addCellValue(int cellNumber) {
        selectedCellValues.add(cellNumber);

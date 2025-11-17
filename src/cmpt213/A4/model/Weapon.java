@@ -6,7 +6,7 @@ import java.util.List;
 
 interface weaponAbilities {
     void assignWeapon(String weaponName, double[] damagePercentages);
-
+    double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide);
     }
 
 class Weapon implements weaponAbilities{
@@ -35,6 +35,20 @@ class Weapon implements weaponAbilities{
             this.percentDamageOpponents.add(damagePercentages[i]);
         }
     }
+    @Override
+    public double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide) {
+        double[] damages = new double[3];
+        for (int i = 0 ; i < 3; i++) {
+            if (i == colIndex) {
+                damages[i] = damageMain;
+
+            }
+            else {
+                damages[i] = damageSide;
+            }
+        }
+        return damages;
+    }
 
 }
 
@@ -53,6 +67,11 @@ class NullWeapon extends Weapon{
     public void assignWeapon(String weaponName, double[] damagePercentages) {
         System.out.println("No weapon selected");
         //this.weaponName = weaponName;
+    }
+    @Override
+    public double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide) {
+        double[] damages = {0.0, 0.0, 0.0};
+        return damages;
     }
 
 }

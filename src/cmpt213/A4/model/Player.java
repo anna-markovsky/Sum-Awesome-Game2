@@ -16,6 +16,7 @@ public class Player {
     }
 
     public void equipWeapon(Weapon weapon) {
+
         this.weaponEquipped = weapon;
     }
 
@@ -30,8 +31,14 @@ public class Player {
     public int getPlayerHealth(){
         return health;
     }
+    public void resetPlayerHealth() {
+        health = DEFAULT_HEALTH;
+    }
 
     public boolean didPlayerLose(){
+
         return health <= 0;
     }
+
+
 }

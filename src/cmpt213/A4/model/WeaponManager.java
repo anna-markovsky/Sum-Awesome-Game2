@@ -4,26 +4,31 @@ import java.util.*;
 
 public class WeaponManager {
     private Game game;
-
     public WeaponManager(Game game){
         this.game = game;
         registerAsObserver();
     }
 
     private void registerAsObserver() {
-        game.addMoveObserver(new PlayerMoveObserver() {
+        game.addObserver(new PlayerAttackObserver() {
             @Override
-            public void stateChanged() {
+            public void attackStateChanged() {
                 selectPlayerWeapon();
             }
         });
     }
 //TODO handle avoiding selecting dead opponents
-    private double[] assignRandomOpponentDamage(double damage) {
+    private int assignRandomOpponentDamage() {
         Random random = new Random();
-        int index = random.nextInt(3);
-        double[] damagePercentages = new double[3];
-        for (int i = 0;i < 3;i++) {
+        List<Opponent> opponents = game.getOpponents();
+        int index = random.nextInt(game.getOpponents().size());
+        //double[] damagePercentages = new double[opponents.size()];
+        while (opponents.get(index).getHealth() < 0) {
+            index = random.nextInt(game.getOpponents().size());
+        }
+        return index;
+        /*double[] damagePercentages = new double[numAliveOpponents];
+        for (int i = 0;i < numAliveOpponents;i++) {
             if (index == i) {
                 damagePercentages[i] = damage;
             }
@@ -31,7 +36,7 @@ public class WeaponManager {
                 damagePercentages[i] = 0.0;
             }
         }
-        return damagePercentages;
+        return damagePercentages;*/
     }
     private void selectPlayerWeapon() {
         FillConditions fillConditions = game.getFillConditions();
@@ -56,7 +61,8 @@ public class WeaponManager {
         if (fillConditions.checkAddedCellsDescending()) {
             System.out.println("diamond sword");
             Weapon weapon = new Weapon();
-            double[] damagePercentages = {0.75,1.0,0.75};
+            int colIndex = game.getFillConditions().getLastSelectedColIndex();
+            double[] damagePercentages = weapon.assignDamagePercentages(colIndex, 1.0, 0.75);
             weapon.assignWeapon("diamond sword", damagePercentages);
             return weapon;
         }
@@ -65,24 +71,29 @@ public class WeaponManager {
                 System.out.println("Fire staff");
                 Weapon weapon = new Weapon();
                 //TODO make it so that it checks what character was selected
-                double[] damagePercentages = {0.5,1.0,0.5};
+                int colIndex = game.getFillConditions().getLastSelectedColIndex();
+                double[] damagePercentages = weapon.assignDamagePercentages(colIndex, 1.0, 0.5);
+
                 weapon.assignWeapon("fire staff", damagePercentages);
                 return weapon;
 
-            }
-            else {
+            } else {
                 System.out.println("Stone hammer");
                 Weapon weapon = new Weapon();
-                double[] damagePercentages = {0.8,0.8,0.8};
+                int colIndex = game.getFillConditions().getLastSelectedColIndex();
+
+                double[] damagePercentages = weapon.assignDamagePercentages(colIndex, 0.8, 0.8);
                 weapon.assignWeapon("stone hammer", damagePercentages);
                 return weapon;
 
             }
         }
-        if (fillConditions.getSecondsTaken() <= 30) {
-            if (fillConditions.getSecondsTaken() <= 20) {
+        System.out.println("Seconds taken "+ game.getFillConditions().getSecondsTaken() );
+        if (game.getFillConditions().getSecondsTaken() <= 30) {
+            if (game.getFillConditions().getSecondsTaken() <= 20) {
                 Weapon weapon = new Weapon();
-                double[] damagePercentages = assignRandomOpponentDamage(1.0);
+                int mainIndex = assignRandomOpponentDamage();
+                double[] damagePercentages = weapon.assignDamagePercentages(mainIndex, 1.0,0.0);
                 weapon.assignWeapon("lightning wand", damagePercentages);
 
                 System.out.println("seconds taken "+ fillConditions.getSecondsTaken());
@@ -91,7 +102,8 @@ public class WeaponManager {
             }
             else {
                 Weapon weapon = new Weapon();
-                double[] damagePercentages = assignRandomOpponentDamage(0.5);
+                int mainIndex = assignRandomOpponentDamage();
+                double[] damagePercentages = weapon.assignDamagePercentages(mainIndex, 0.5,0.0);
                 weapon.assignWeapon("sparkle dagger", damagePercentages);
 
                 System.out.println("Sparkle dagger");

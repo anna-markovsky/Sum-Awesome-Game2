@@ -19,14 +19,27 @@ public class StatsTracker {
         this.fillsCompleted = 0;
         registerAsObserver();
         registerAsMoveObserver();
+        registerAsMatchObserver();
     }
     public void addFillsCompleted() {
         this.fillsCompleted += 1;
     }
+    public void addMatch() {
+        //if(game.hasUserWon()) {
+            matchesWon += 1;
+            matches.put("Won", matchesWon);
+        //}
+        //if(game.hasOpponentWon()) {
+            matchesLost += 1;
+            matches.put("Lost", matchesLost);
+        //}
+    }
     public void updateAttacks() {
         this.damageDone += game.fillStrength;
-        totalDamage.put("Done",damageDone);
+        //this.damageReceived += game.getPlayer().getPlayerHealth();
+        totalDamage.put("Done", damageDone);
         //Add opponent damage here
+        totalDamage.put("Received", damageReceived);
     }
     public void updateEquipment() {
         Weapon weapon = game.getPlayer().getWeapon();
@@ -37,7 +50,7 @@ public class StatsTracker {
     private void registerAsObserver() {
         game.addObserver(new PlayerAttackObserver() {
             @Override
-            public void stateChanged() {
+            public void attackStateChanged() {
                 updateAttacks();
                 updateEquipment();
                 printStats();
@@ -47,13 +60,20 @@ public class StatsTracker {
     private void registerAsMoveObserver() {
         game.addMoveObserver(new PlayerMoveObserver() {
             @Override
-            public void stateChanged() {
+            public void moveStateChanged() {
                 addFillsCompleted();
                 //printStats();
             }
         });
     }
-
+    private void registerAsMatchObserver() {
+        game.addMatchObserver(new MatchCompleteObserver() {
+            @Override
+            public void stateChanged() {
+                addMatch();
+            }
+        });
+    }
     //public void updateEquipmentActivations(){
 
     //}
@@ -68,10 +88,13 @@ public class StatsTracker {
         }
         System.out.println(events.get(index));
         index++;
+        for (String i : matches.keySet()) {
+            System.out.println(i + " " + matches.get(i));
+        }
         System.out.println(events.get(index) + " " + damageDone);
         index++;
         for (String i : totalDamage.keySet()) {
-            System.out.println("equipment: " + i + " Activated: " + equipmentActivations.get(i));
+            System.out.println(i + " " +totalDamage.get(i));
         }
         System.out.println(events.get(index) + " " + fillsCompleted);
         /*for (String i : equipmentActivations.keySet()) {

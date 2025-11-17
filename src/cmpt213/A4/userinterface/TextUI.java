@@ -1,9 +1,6 @@
 package cmpt213.A4.userinterface;
 
-import cmpt213.A4.model.Cell;
-import cmpt213.A4.model.Game;
-import cmpt213.A4.model.GameBoard;
-import cmpt213.A4.model.Opponent;
+import cmpt213.A4.model.*;
 
 
 import java.util.List;
@@ -13,7 +10,8 @@ public class TextUI {
     private static final String NOTFILL_SYMBOL = " ";
     private static final String FILL_SYMBOL = "_";
     private static final int ROW_LENGTH = 3;
-    private final Game game;
+    private Game game;
+    //public Cell lastSelectedCell;
 
     public TextUI(Game game) {
         this.game = game;
@@ -21,14 +19,16 @@ public class TextUI {
 
     public void playGame() {
         displayWelcome();
-        displayBoard(false);
+        //displayBoard(false);
         long startTime = System.nanoTime();
 
         while (gameRunning()) {
-            System.out.println("here");
+            displayHealthOpponents();
+            displayBoard(false);
+            displayPlayerInfo();
             boolean isAttackDone = false;
             //long startTime = System.nanoTime();
-            Cell lastCell = doPlayerTurn();
+            doPlayerTurn();
 
             if (game.playerReadyForAttack()) {
                 //isAttackDone = true;
@@ -37,24 +37,20 @@ public class TextUI {
                 long elapsedTimeNanos = endTime - startTime;
                 double durationSeconds = (double) elapsedTimeNanos / 1_000_000_000.0;
                 game.updateFillTime(durationSeconds);
-                System.out.println("Method execution time: " + durationSeconds + " seconds");
-                //game.attackOpponent(lastCell.getColumnIndex());
-                game.replaceBoardIfFilled();
-
+                System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
                 game.attackOpponent();
+                //game.attackOpponent();
                 game.resetGameConditions();
             }
-        displayHealthOpponents();
-        displayBoard(false);
 
-        displayPlayerInfo();
 
         doWonOrLost();
         }
     }
 
     private boolean gameRunning() {
-        return !game.hasUserWon() && !game.hasOpponentWon();
+        return true;
+        //return !game.hasUserWon() && !game.hasOpponentWon();
     }
 
     private void displayWelcome() {
@@ -110,7 +106,7 @@ public class TextUI {
             System.out.println(output);
             System.out.println();
         }
-        System.out.println("[" + game.getPlayerHealth() + "] Fill Strength: " + game.getFillStrength());
+        //System.out.println("[" + game.getPlayerHealth() + "] Fill Strength: " + game.getFillStrength());
     }
 
     private int getPlayerMove() {
@@ -147,7 +143,7 @@ public class TextUI {
         }
     }
 
-    private Cell doPlayerTurn() {
+    private void doPlayerTurn() {
         int sum = getPlayerMove();
         try {
             Cell matchingCell = game.getMatchingCell(sum);
@@ -157,19 +153,22 @@ public class TextUI {
             game.updateMatchingCellPosition(matchingCell);
 
             System.out.print("Player Turn was successful. ");
-            return matchingCell;
+            //this.lastSelectedCell = matchingCell;
+            //return matchingCell;
         }
         catch(IllegalArgumentException e) {
             System.out.println("Invalid sum. Opponent will attack.");
         }
-        return null;
+        //return null;
     }
 
     private void doWonOrLost() {
         if (game.hasUserWon()) {
             System.out.println("Congratulations! You won!");
+            game.startNewMatch();
         } else if (game.hasOpponentWon()) {
             System.out.println("I'm sorry, you have no health left! They win!");
+            game.startNewMatch();
         } else {
             assert false;
         }

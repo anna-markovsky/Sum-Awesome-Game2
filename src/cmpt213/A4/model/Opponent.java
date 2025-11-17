@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Opponent {
     private int health;
+    private int damageRecieved;
     private int damage;
 
     public Opponent(int health, int damage){
@@ -19,7 +20,13 @@ public class Opponent {
     }
 
     public void takeDamage(int damage){
-        health -= damage;
+        if (health - damage < 0){
+            
+            health = 0;
+        }
+        else{
+            health -= damage;
+        }
     }
     //TODO attack player
     public static void attack(){

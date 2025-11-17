@@ -4,6 +4,7 @@ import cmpt213.A4.model.FillConditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Game {
     public int playerHealth = 600;
@@ -14,12 +15,12 @@ public class Game {
     private FillConditions fillConditions = new FillConditions();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
-
+    private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
     public Game() {
         generateOpponents();
 
         //player.equipWeapon(new NullWeapon());
-        this.opponents = generateOpponents();
+        //this.opponents = generateOpponents();
     }
     public Player getPlayer() {
         return player;
@@ -39,6 +40,7 @@ public class Game {
         return opponents;
     }
 
+
     public Cell getCellState(int row, int col) {
         return board.getCell(row, col);
     }
@@ -47,6 +49,7 @@ public class Game {
         cell.setFill(true);
         fillConditions.setNumFills(fillConditions.getNumFills() + 1);
         fillConditions.addCellValue(cell.getCurrentNumber());
+        fillConditions.setLastSelectedColIndex(cell.getColumnIndex());
         fillStrength += cell.getCurrentNumber();
         notifyMoveObservers();
     }
@@ -60,6 +63,8 @@ public class Game {
     }
 
     public void updateFillTime(double durationSeconds) {
+
+        System.out.println("DEBUG: updateFillTime called, seconds = " + durationSeconds);
         fillConditions.setSecondsTaken(durationSeconds);
     }
 
@@ -117,9 +122,16 @@ public class Game {
         fillStrength = 0;
     }
 
+
+
+    public void startNewMatch() {
+        resetGameConditions();
+        generateOpponents();
+        player.resetPlayerHealth();
+    }
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
-            notifyObservers();
+            //notifyObservers();
             return true;
         }
         return false;
@@ -127,16 +139,26 @@ public class Game {
 
 
     public void attackOpponent() {
+        notifyObservers();
         Weapon equippedWeapon = player.getWeapon();
         List<Double> damages = equippedWeapon.getDamageOpponents();
-        for (int i = 0;i<damages.size();i++){
-            System.out.println("player attacks opponent " + i + " with " + damages.get(i));
-            Opponent curOp = opponents.get(i);
-            curOp.takeDamage(200);
-        }
-        System.out.println("Player is attacking opponent with " + fillStrength + " damage applied with " + equippedWeapon.getWeaponName());
+        //first attack selected opponent based on index
+        int opponentIndex = fillConditions.getLastSelectedColIndex();
+        Opponent selectedOpponent = opponents.get(opponentIndex);
+        selectedOpponent.takeDamage(fillStrength);
+        System.out.println("opponent " + opponentIndex + " has " + selectedOpponent.getHealth() + " health");
+        System.out.println("damages size" + damages.size());
+        for (int i = 0;i < damages.size();i++){
+            Opponent currentOpponent = opponents.get(i);
+            //      currentOpponent.takeDamage(fillStrength);
+            double weaponDamage = currentOpponent.getHealth() * damages.get(i);
+            currentOpponent.takeDamage((int) weaponDamage);
+            System.out.println("player attacks opponent " + i + " with " + weaponDamage);
 
-        notifyObservers();
+        }
+        System.out.println("Player is attacking opponent with " + equippedWeapon.getWeaponName());
+        //opponents.get(col).takeDamage(fillStrength);
+        //notifyObservers();
     }
 
 
@@ -147,12 +169,19 @@ public class Game {
                 numOpponentsDead++;
             }
         }
-        return (numOpponentsDead == 3);
+        if (numOpponentsDead == 3){
+            notifyMatchObservers();
+            return true;
+        }
+        return false;
     }
 
     public boolean hasOpponentWon() {
-
-        return player.didPlayerLose();
+        if(player.didPlayerLose()) {
+            notifyMatchObservers();
+            return true;
+        }
+        return false;
     }
 
     /*
@@ -164,7 +193,7 @@ public class Game {
     }
     private void notifyObservers() {
         for (PlayerAttackObserver observer : observers) {
-            observer.stateChanged();
+            observer.attackStateChanged();
         }
     }
 
@@ -173,8 +202,17 @@ public class Game {
     }
     private void notifyMoveObservers() {
         for (PlayerMoveObserver observer : moveObservers) {
+            observer.moveStateChanged();
+        }
+    }
+    public void addMatchObserver(MatchCompleteObserver observer) {
+        matchObservers.add(observer);
+    }
+    private void notifyMatchObservers() {
+        for (MatchCompleteObserver observer : matchObservers) {
             observer.stateChanged();
         }
     }
+
 
 }

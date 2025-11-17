@@ -4,5 +4,5 @@ package cmpt213.A4.model;
  * and react when the player makes a move
  */
 public interface PlayerMoveObserver {
-    void stateChanged();
+    void moveStateChanged();
 }

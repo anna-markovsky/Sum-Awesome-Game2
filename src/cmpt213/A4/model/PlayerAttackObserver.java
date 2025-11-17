@@ -5,7 +5,7 @@ package cmpt213.A4.model;
      * and react when the player makes an attack.
      */
     public interface PlayerAttackObserver {
-        void stateChanged();
+        void attackStateChanged();
     }
 
 
