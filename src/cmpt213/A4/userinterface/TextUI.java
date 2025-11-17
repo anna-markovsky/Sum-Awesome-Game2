@@ -42,7 +42,9 @@ public class TextUI {
                 //game.attackOpponent();
                 game.resetGameConditions();
             }
-
+            if (game.opponentReadyForAttack()) {
+                game.attackPlayer();
+            }
 
         doWonOrLost();
         }
@@ -158,6 +160,7 @@ public class TextUI {
         }
         catch(IllegalArgumentException e) {
             System.out.println("Invalid sum. Opponent will attack.");
+            game.attackPlayer();
         }
         //return null;
     }

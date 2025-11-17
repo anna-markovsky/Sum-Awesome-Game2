@@ -8,7 +8,11 @@ import java.util.stream.Collectors;
 
 public class Game {
     public int playerHealth = 600;
+    public int numPlayerMoves = 0;
     public int fillStrength = 0;
+    private int turnsUntilAttack;
+    private int MIN_TURNS = 3;
+    private int MAX_TURNS = 5;
     private Player player = new Player();
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard();
@@ -18,7 +22,7 @@ public class Game {
     private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
     public Game() {
         generateOpponents();
-
+        setTurnsUntilAttack();
         //player.equipWeapon(new NullWeapon());
         //this.opponents = generateOpponents();
     }
@@ -35,11 +39,28 @@ public class Game {
             opponents.add(new Opponent(200, 30));
         }
     }
+    public void setTurnsUntilAttack() {
+        Random random = new Random();
+        int turnsUntilAttack = random.nextInt(MAX_TURNS - MIN_TURNS + 1) + MIN_TURNS;
+        System.out.println("turns until attack = "+ turnsUntilAttack);
+        this.turnsUntilAttack = turnsUntilAttack;
+    }
+
 
     public List<Opponent> getOpponents() {
         return opponents;
     }
+    public List<Opponent> getAliveOpponents() {
+        List<Opponent> opponents = getOpponents();
 
+        //remove dead opponents so we don't select them
+        for (int i = 0; i < opponents.size(); i++) {
+            if (opponents.get(i).getHealth() <= 0) {
+                opponents.remove(i);
+            }
+        }
+        return opponents;
+    }
 
     public Cell getCellState(int row, int col) {
         return board.getCell(row, col);
@@ -51,9 +72,25 @@ public class Game {
         fillConditions.addCellValue(cell.getCurrentNumber());
         fillConditions.setLastSelectedColIndex(cell.getColumnIndex());
         fillStrength += cell.getCurrentNumber();
+        turnsUntilAttack -= 1;
         notifyMoveObservers();
     }
 
+
+    public Opponent selectRandomOpponent(){
+        List<Opponent> opponents = getAliveOpponents();
+
+        Random random = new Random();
+        int index = random.nextInt(opponents.size());
+        return opponents.get(index);
+    }
+    public boolean opponentReadyForAttack() {
+        return (turnsUntilAttack == 0);
+    }
+    public void opponentMove() {
+
+
+    }
     public int getFillStrength(){
         return fillStrength;
     }
@@ -137,7 +174,11 @@ public class Game {
         return false;
     }
 
-
+    public void attackPlayer() {
+        Opponent opponent = selectRandomOpponent();
+        player.decreaseHealth(opponent.getDamage());
+        setTurnsUntilAttack();
+    }
     public void attackOpponent() {
         notifyObservers();
         Weapon equippedWeapon = player.getWeapon();

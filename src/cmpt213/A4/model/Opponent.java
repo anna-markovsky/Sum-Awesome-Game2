@@ -21,7 +21,7 @@ public class Opponent {
 
     public void takeDamage(int damage){
         if (health - damage < 0){
-            
+
             health = 0;
         }
         else{
@@ -29,7 +29,9 @@ public class Opponent {
         }
     }
     //TODO attack player
+
     public static void attack(){
+
         System.out.println("Attacking player");
     }
 }

@@ -2,7 +2,7 @@ package cmpt213.A4.model;
 import cmpt213.A4.model.*;
 public class Player {
     //private List<>
-    private final int DEFAULT_HEALTH = 600;
+    private final int DEFAULT_HEALTH = 200;
     private final int MAX_NUM_RINGS = 3;
     private int health;
     private Weapon weaponEquipped;
