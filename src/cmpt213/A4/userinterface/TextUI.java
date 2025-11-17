@@ -5,6 +5,7 @@ import cmpt213.A4.model.Game;
 import cmpt213.A4.model.GameBoard;
 import cmpt213.A4.model.Opponent;
 
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,8 +29,8 @@ public class TextUI {
             boolean isAttackDone = false;
             //long startTime = System.nanoTime();
             Cell lastCell = doPlayerTurn();
+
             if (game.playerReadyForAttack()) {
-                System.out.println("test");
                 //isAttackDone = true;
                 //doOpponentTurn();
                 long endTime = System.nanoTime();
@@ -37,12 +38,17 @@ public class TextUI {
                 double durationSeconds = (double) elapsedTimeNanos / 1_000_000_000.0;
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + durationSeconds + " seconds");
-                game.attackOpponent(lastCell.getColumnIndex());
+                //game.attackOpponent(lastCell.getColumnIndex());
                 game.replaceBoardIfFilled();
 
+                game.attackOpponent();
+                game.resetGameConditions();
             }
-
+        displayHealthOpponents();
         displayBoard(false);
+
+        displayPlayerInfo();
+
         doWonOrLost();
         }
     }
@@ -58,17 +64,32 @@ public class TextUI {
         System.out.println("------------------------");
         System.out.println();
     }
+    public void displayHealthOpponents() {
+        List<Opponent> opponents = game.getOpponents();
+        opponents.stream().forEach(opponent -> {
+            String format = "[" + opponent.getHealth() + "]";
+            String output = String.format("%-7s", format);
+            System.out.print(output);
+        });
+    }
+    public void displayPlayerInfo() {
+        Player player = game.getPlayer();
+        String format = "[" + player.getPlayerHealth() + "]";
+        String firstHalf = String.format("%-7s", format);
 
+        String secondHalf = "Fill Strength: " + game.fillStrength;
+        System.out.println(firstHalf + secondHalf);
+
+        //System.out.println("[ " + player.getPlayerHealth() + " ]       Fill Strength: " + game.fillStrength);
+    }
     //TODO fix the column format
     public void displayBoard(boolean revealBoard) {
         System.out.println();
-        System.out.println("Game Board:");
+        //List<Opponent> opps = game.getOpponents();
+        //for(int i = 0; i < 3; i++){
+        //    System.out.print("[" + opps.get(i).getHealth() + "] ");
+        //}
 
-        List<Opponent> opps = game.getOpponents();
-        for(int i = 0; i < 3; i++){
-            System.out.print("[" + opps.get(i).getHealth() + "] ");
-        }
-        System.out.println();
         // Print rows:
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
@@ -76,10 +97,14 @@ public class TextUI {
                 Cell cell = game.getCellState(row, col);
                 int symbol = cell.getCurrentNumber();
                 if(cell.isFill()){
-                    output +=  FILL_SYMBOL  + symbol + FILL_SYMBOL + "   ";
+                    String format = FILL_SYMBOL  + symbol + FILL_SYMBOL;
+                    output += String.format("%-7s", format);
+                    //output +=  FILL_SYMBOL  + symbol + FILL_SYMBOL + "   ";
                 }
                 else {
-                    output += NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL + "   ";
+                    String format = NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL;
+                    output += String.format("%-7s", format);
+
                 }
             }
             System.out.println(output);

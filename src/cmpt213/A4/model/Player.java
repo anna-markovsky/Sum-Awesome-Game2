@@ -10,6 +10,7 @@ public class Player {
 
     public Player() {
         this.health = DEFAULT_HEALTH;
+        this.weaponEquipped = new NullWeapon();
         //rings = new Rings.Ring[3];
         //rings[0] = new Rings.NullRing();
     }

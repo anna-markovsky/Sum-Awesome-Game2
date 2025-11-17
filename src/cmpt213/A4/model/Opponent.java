@@ -1,5 +1,7 @@
 package cmpt213.A4.model;
 
+import java.util.*;
+
 public class Opponent {
     private int health;
     private int damage;
@@ -8,7 +10,6 @@ public class Opponent {
         this.health = health;
         this.damage = damage;
     }
-
     public int getHealth(){
         return health;
     }

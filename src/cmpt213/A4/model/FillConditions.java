@@ -11,7 +11,7 @@ public class FillConditions {
 
     public FillConditions(){
         //this.selectedCellValues = new int[0];
-        this.secondsTaken = 30;
+        this.secondsTaken = 0.0;
         this.numFills = 0;
 
         this.isAscending = false;
@@ -38,31 +38,32 @@ public class FillConditions {
     public void addCellValue(int cellNumber) {
        selectedCellValues.add(cellNumber);
     }
-    public void checkAddedCellsAscending() {
+    public boolean checkAddedCellsAscending() {
         int minValue = selectedCellValues.get(0);
         boolean allAscending = true;
         for (int i = 0; i < selectedCellValues.size(); i++) {
             if (selectedCellValues.get(i) < minValue) {
-                allAscending = false;
-                break;
+                //allAscending = false;
+                return false;
+                //break;
             }
             minValue = selectedCellValues.get(i);
         }
-
-        this.isAscending = allAscending;
+        return true;
+        //this.isAscending = allAscending;
     }
-    public void checkAddedCellsDescending() {
+    public boolean checkAddedCellsDescending() {
         int maxValue = selectedCellValues.get(0);
         boolean allDescending = true;
         for (int i = 0; i < selectedCellValues.size(); i++) {
             if (selectedCellValues.get(i) > maxValue) {
-                allDescending = false;
-                break;
+                return false;
             }
             maxValue = selectedCellValues.get(i);
         }
 
-        this.isAscending = allDescending;
+        //this.isAscending = allDescending;
+        return true;
     }
     public boolean isAscending() {
 

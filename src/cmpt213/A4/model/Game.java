@@ -7,17 +7,23 @@ import java.util.Random;
 
 public class Game {
     public int playerHealth = 600;
-    private int fillStrength = 0;
+    public int fillStrength = 0;
     private Player player = new Player();
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard();
     private FillConditions fillConditions = new FillConditions();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
+    private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
 
     public Game() {
         generateOpponents();
-    }
 
+        //player.equipWeapon(new NullWeapon());
+        this.opponents = generateOpponents();
+    }
+    public Player getPlayer() {
+        return player;
+    }
     public FillConditions getFillConditions() {
         return fillConditions;
     }
@@ -42,6 +48,7 @@ public class Game {
         fillConditions.setNumFills(fillConditions.getNumFills() + 1);
         fillConditions.addCellValue(cell.getCurrentNumber());
         fillStrength += cell.getCurrentNumber();
+        notifyMoveObservers();
     }
 
     public int getFillStrength(){
@@ -101,34 +108,50 @@ public class Game {
         throw new IllegalArgumentException();
     }
 
-    public void replaceBoardIfFilled() {
+    public void resetGameConditions() {
         if (board.isWholeBoardFill()) {
-            this.board = new GameBoard();
+            board = new GameBoard();
+            fillStrength = 0;
+            fillConditions = new FillConditions();
         }
         fillStrength = 0;
     }
 
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
-            System.out.println("Player is attacking opponent with " + fillStrength + "damage applied");
             notifyObservers();
             return true;
         }
         return false;
     }
 
-    public void attackOpponent(int col) {
-        System.out.println("Player is attacking opponent with " + fillStrength + " damage applied");
-        opponents.get(col).takeDamage(fillStrength);
+
+    public void attackOpponent() {
+        Weapon equippedWeapon = player.getWeapon();
+        List<Double> damages = equippedWeapon.getDamageOpponents();
+        for (int i = 0;i<damages.size();i++){
+            System.out.println("player attacks opponent " + i + " with " + damages.get(i));
+            Opponent curOp = opponents.get(i);
+            curOp.takeDamage(200);
+        }
+        System.out.println("Player is attacking opponent with " + fillStrength + " damage applied with " + equippedWeapon.getWeaponName());
+
         notifyObservers();
     }
 
+
     public boolean hasUserWon() {
-        //TODO Create this method
-        return false;
+        int numOpponentsDead = 0;
+        for (int i = 0; i < opponents.size(); i++) {
+            if (opponents.get(i).getHealth() <= 0) {
+                numOpponentsDead++;
+            }
+        }
+        return (numOpponentsDead == 3);
     }
 
     public boolean hasOpponentWon() {
+
         return player.didPlayerLose();
     }
 
@@ -144,4 +167,14 @@ public class Game {
             observer.stateChanged();
         }
     }
+
+    public void addMoveObserver(PlayerMoveObserver observer) {
+        moveObservers.add(observer);
+    }
+    private void notifyMoveObservers() {
+        for (PlayerMoveObserver observer : moveObservers) {
+            observer.stateChanged();
+        }
+    }
+
 }
