@@ -12,7 +12,7 @@ interface weaponAbilities {
 class Weapon implements weaponAbilities{
     private String weaponName;
     //private double percentDamageLeftOpponent;
-    //rivate double percentDamageMiddleOpponent;
+    //private double percentDamageMiddleOpponent;
    // private double percentDamageRightOpponent;
     private List<Double> percentDamageOpponents;
     public String getWeaponName() {

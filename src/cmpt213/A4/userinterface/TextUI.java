@@ -12,7 +12,7 @@ public class TextUI {
     private static final String NOTFILL_SYMBOL = " ";
     private static final String FILL_SYMBOL = "_";
     private static final int ROW_LENGTH = 3;
-    private final Game game;
+    private Game game;
 
     public TextUI(Game game) {
         this.game = game;
@@ -109,7 +109,7 @@ public class TextUI {
                     break;
                 case "new":
                     System.out.println("Starting new game...");
-                    // TODO handle new
+                    game = new Game();
                     break;
                 default:
                     try {
@@ -148,6 +148,5 @@ public class TextUI {
         } else {
             assert false;
         }
-        displayBoard(true);
     }
 }

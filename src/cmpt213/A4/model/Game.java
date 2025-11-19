@@ -13,9 +13,13 @@ public class Game {
     private GameBoard board = new GameBoard();
     private FillConditions fillConditions = new FillConditions();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
+    private final RingManager ringManager = new RingManager();
 
     public Game() {
         generateOpponents();
+ //       ringManager.equipRing(ringManager.getAllRings().get(2));
+//        ringManager.equipRing(ringManager.getAllRings().get(0));
+//        ringManager.equipRing(ringManager.getAllRings().get(0));
     }
 
     public FillConditions getFillConditions() {
@@ -119,7 +123,7 @@ public class Game {
 
     public void attackOpponent(int col) {
         System.out.println("Player is attacking opponent with " + fillStrength + " damage applied");
-        opponents.get(col).takeDamage(fillStrength);
+        opponents.get(col).takeDamage(ringManager.calculateTotalMultiplier(fillStrength));
         notifyObservers();
     }
 
