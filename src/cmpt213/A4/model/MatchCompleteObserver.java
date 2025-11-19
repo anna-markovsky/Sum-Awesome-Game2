@@ -5,7 +5,7 @@ package cmpt213.A4.model;
  * and react when a game ends
  */
 public interface MatchCompleteObserver {
-    void stateChanged();
+    void stateChanged(boolean matchWon);
 }
 
 

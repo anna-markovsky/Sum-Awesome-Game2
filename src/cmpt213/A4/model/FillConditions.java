@@ -5,7 +5,7 @@ import java.util.*;
 public class FillConditions {
     private List<Integer> selectedCellValues = new ArrayList<>();
     private double secondsTaken;
-    private int numFills;
+    //private int numFills;
     private boolean isAscending;
     private boolean isDescending;
     private int lastSelectedColIndex;
@@ -13,7 +13,7 @@ public class FillConditions {
     public FillConditions(){
         //this.selectedCellValues = new int[0];
         this.secondsTaken = 0.0;
-        this.numFills = 0;
+        //this.numFills = 0;
         this.isAscending = false;
         this.isDescending = false;
     }
@@ -26,6 +26,7 @@ public class FillConditions {
         this.secondsTaken = secondsTaken;
     }
 
+/*
     public int getNumFills() {
 
         return numFills;
@@ -34,6 +35,11 @@ public class FillConditions {
 
         this.numFills = numFills;
     }
+    public void addNumFills() {
+        System.out.println("New num numfills " + numFills+1);
+
+        this.numFills = numFills + 1;
+    }*/
     public int getLastSelectedColIndex() {
         return lastSelectedColIndex;
     }
@@ -43,10 +49,22 @@ public class FillConditions {
     public void addCellValue(int cellNumber) {
        selectedCellValues.add(cellNumber);
     }
+
+    public int calculateNumFills() {
+        if(selectedCellValues.isEmpty()) {
+            return 0;
+        }
+        return selectedCellValues.size();
+
+    }
     public boolean checkAddedCellsAscending() {
+        if(selectedCellValues.isEmpty()) {
+            return false;
+        }
         int minValue = selectedCellValues.get(0);
         boolean allAscending = true;
         for (int i = 0; i < selectedCellValues.size(); i++) {
+            System.out.println("CELL VALUES" + selectedCellValues.get(i));
             if (selectedCellValues.get(i) < minValue) {
                 //allAscending = false;
                 return false;
@@ -58,6 +76,9 @@ public class FillConditions {
         //this.isAscending = allAscending;
     }
     public boolean checkAddedCellsDescending() {
+        if(selectedCellValues.isEmpty()) {
+            return false;
+        }
         int maxValue = selectedCellValues.get(0);
         boolean allDescending = true;
         for (int i = 0; i < selectedCellValues.size(); i++) {

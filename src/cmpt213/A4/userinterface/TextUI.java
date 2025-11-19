@@ -18,6 +18,7 @@ public class TextUI {
     }
 
     public void playGame() {
+        game.startNewMatch();
         displayWelcome();
         //displayBoard(false);
         long startTime = System.nanoTime();
@@ -26,7 +27,6 @@ public class TextUI {
             displayHealthOpponents();
             displayBoard(false);
             displayPlayerInfo();
-            boolean isAttackDone = false;
             //long startTime = System.nanoTime();
             doPlayerTurn();
 
@@ -49,7 +49,6 @@ public class TextUI {
         doWonOrLost();
         }
     }
-
     private boolean gameRunning() {
         return true;
         //return !game.hasUserWon() && !game.hasOpponentWon();
@@ -175,6 +174,6 @@ public class TextUI {
         } else {
             assert false;
         }
-        displayBoard(true);
+        //displayBoard(true);
     }
 }

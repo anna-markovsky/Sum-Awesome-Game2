@@ -22,36 +22,51 @@ public class StatsTracker {
         registerAsMatchObserver();
     }
     public void addFillsCompleted() {
-        this.fillsCompleted += 1;
+
+        this.fillsCompleted = game.getPlayer().getNumFills();
     }
-    public void addMatch() {
-        //if(game.hasUserWon()) {
-            matchesWon += 1;
-            matches.put("Won", matchesWon);
-        //}
-        //if(game.hasOpponentWon()) {
-            matchesLost += 1;
-            matches.put("Lost", matchesLost);
-        //}
+    public void addMatch(boolean matchWon) {
+        if(matchWon) {
+            //matchesWon += 1;
+            matches.merge("Won", 1, Integer::sum);
+
+            //matches.put("Won", matchesWon);
+        }
+        else {
+            //matchesLost += 1;
+            //matches.put("Lost", matchesLost);
+            matches.merge("Lost", 1, Integer::sum);
+
+        }
+
+
     }
-    public void updateAttacks() {
-        this.damageDone += game.fillStrength;
-        //this.damageReceived += game.getPlayer().getPlayerHealth();
+
+    public void updateDamageDealt() {
+        this.damageDone = game.getPlayer().getDamageDealt();
+
         totalDamage.put("Done", damageDone);
-        //Add opponent damage here
-        totalDamage.put("Received", damageReceived);
+        System.out.println("fill damage stats: " + damageDone);
     }
+    public void updateDamageReceived() {
+        this.damageReceived = game.getPlayer().getDamageReceived();
+        System.out.println("damage recieved stats: " + game.getPlayer().getDamageReceived());
+        totalDamage.put("Received", damageReceived);
+
+    }
+
     public void updateEquipment() {
-        Weapon weapon = game.getPlayer().getWeapon();
-        equipmentActivations.put(weapon.getWeaponName(), 1);
-        //this.equipmentActivations
+        String weaponName = game.getPlayer().getWeapon().getWeaponName();
+        if(!weaponName.equals("")) {
+            equipmentActivations.merge(weaponName, 1, Integer::sum);
+        }
     }
 
     private void registerAsObserver() {
         game.addObserver(new PlayerAttackObserver() {
             @Override
             public void attackStateChanged() {
-                updateAttacks();
+                //updateAttacks();
                 updateEquipment();
                 printStats();
             }
@@ -62,6 +77,9 @@ public class StatsTracker {
             @Override
             public void moveStateChanged() {
                 addFillsCompleted();
+                //updateAttacks();
+                updateDamageDealt();
+                updateDamageReceived();
                 //printStats();
             }
         });
@@ -69,8 +87,10 @@ public class StatsTracker {
     private void registerAsMatchObserver() {
         game.addMatchObserver(new MatchCompleteObserver() {
             @Override
-            public void stateChanged() {
-                addMatch();
+            public void stateChanged(boolean matchWon) {
+
+                addMatch(matchWon);
+                printStats();
             }
         });
     }

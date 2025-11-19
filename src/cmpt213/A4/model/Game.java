@@ -7,12 +7,12 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Game {
-    public int playerHealth = 600;
-    public int numPlayerMoves = 0;
+    //public int playerHealth = 600;
     public int fillStrength = 0;
     private int turnsUntilAttack;
     private int MIN_TURNS = 3;
     private int MAX_TURNS = 5;
+    private int NUM_OPPONENTS = 3;
     private Player player = new Player();
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard();
@@ -35,7 +35,7 @@ public class Game {
 
     public void generateOpponents() {
         opponents = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < NUM_OPPONENTS; i++) {
             opponents.add(new Opponent(200, 30));
         }
     }
@@ -51,15 +51,9 @@ public class Game {
         return opponents;
     }
     public List<Opponent> getAliveOpponents() {
-        List<Opponent> opponents = getOpponents();
-
-        //remove dead opponents so we don't select them
-        for (int i = 0; i < opponents.size(); i++) {
-            if (opponents.get(i).getHealth() <= 0) {
-                opponents.remove(i);
-            }
-        }
-        return opponents;
+        return opponents.stream()
+                .filter(o -> o.getHealth() > 0)
+                .collect(Collectors.toList());
     }
 
     public Cell getCellState(int row, int col) {
@@ -68,7 +62,9 @@ public class Game {
 
     public void updateFill(Cell cell) {
         cell.setFill(true);
-        fillConditions.setNumFills(fillConditions.getNumFills() + 1);
+        //fillConditions.setNumFills(fillConditions.getNumFills() + 1);
+        //fillConditions.addNumFills();
+        player.addNumFills();
         fillConditions.addCellValue(cell.getCurrentNumber());
         fillConditions.setLastSelectedColIndex(cell.getColumnIndex());
         fillStrength += cell.getCurrentNumber();
@@ -82,22 +78,13 @@ public class Game {
 
         Random random = new Random();
         int index = random.nextInt(opponents.size());
+        System.out.println("Selected opponent: " + opponents.get(index));
         return opponents.get(index);
     }
     public boolean opponentReadyForAttack() {
         return (turnsUntilAttack == 0);
     }
-    public void opponentMove() {
 
-
-    }
-    public int getFillStrength(){
-        return fillStrength;
-    }
-
-    public int getPlayerHealth(){
-        return playerHealth;
-    }
 
     public void updateFillTime(double durationSeconds) {
 
@@ -151,12 +138,10 @@ public class Game {
     }
 
     public void resetGameConditions() {
-        if (board.isWholeBoardFill()) {
-            board = new GameBoard();
-            fillStrength = 0;
-            fillConditions = new FillConditions();
-        }
+        board = new GameBoard();
         fillStrength = 0;
+        fillConditions = new FillConditions();
+        setTurnsUntilAttack();
     }
 
 
@@ -175,31 +160,39 @@ public class Game {
     }
 
     public void attackPlayer() {
+        //notifyObservers();
         Opponent opponent = selectRandomOpponent();
         player.decreaseHealth(opponent.getDamage());
         setTurnsUntilAttack();
+        notifyMoveObservers();
+
+       // notifyObservers();
+
     }
     public void attackOpponent() {
-        notifyObservers();
         Weapon equippedWeapon = player.getWeapon();
         List<Double> damages = equippedWeapon.getDamageOpponents();
         //first attack selected opponent based on index
         int opponentIndex = fillConditions.getLastSelectedColIndex();
         Opponent selectedOpponent = opponents.get(opponentIndex);
         selectedOpponent.takeDamage(fillStrength);
+        player.addDamageDealt(fillStrength);
         System.out.println("opponent " + opponentIndex + " has " + selectedOpponent.getHealth() + " health");
-        System.out.println("damages size" + damages.size());
         for (int i = 0;i < damages.size();i++){
             Opponent currentOpponent = opponents.get(i);
             //      currentOpponent.takeDamage(fillStrength);
             double weaponDamage = currentOpponent.getHealth() * damages.get(i);
             currentOpponent.takeDamage((int) weaponDamage);
+            player.addDamageDealt((int) weaponDamage);
             System.out.println("player attacks opponent " + i + " with " + weaponDamage);
 
         }
         System.out.println("Player is attacking opponent with " + equippedWeapon.getWeaponName());
-        //opponents.get(col).takeDamage(fillStrength);
-        //notifyObservers();
+       player.dropWeapon();
+       System.out.println("player now should not have a weapon = " + equippedWeapon.getWeaponName());
+       notifyMoveObservers();
+
+        notifyObservers();
     }
 
 
@@ -210,8 +203,12 @@ public class Game {
                 numOpponentsDead++;
             }
         }
-        if (numOpponentsDead == 3){
-            notifyMatchObservers();
+        if (numOpponentsDead == NUM_OPPONENTS){
+            notifyMatchObservers(true);
+            System.out.println("you win, would you like to equip ?");
+
+
+
             return true;
         }
         return false;
@@ -219,7 +216,7 @@ public class Game {
 
     public boolean hasOpponentWon() {
         if(player.didPlayerLose()) {
-            notifyMatchObservers();
+            notifyMatchObservers(false);
             return true;
         }
         return false;
@@ -249,9 +246,9 @@ public class Game {
     public void addMatchObserver(MatchCompleteObserver observer) {
         matchObservers.add(observer);
     }
-    private void notifyMatchObservers() {
+    private void notifyMatchObservers(boolean matchWon) {
         for (MatchCompleteObserver observer : matchObservers) {
-            observer.stateChanged();
+            observer.stateChanged(matchWon);
         }
     }
 
