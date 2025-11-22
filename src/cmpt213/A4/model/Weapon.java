@@ -2,20 +2,18 @@ package cmpt213.A4.model;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 interface weaponAbilities {
-    void assignWeapon(String weaponName, double[] damagePercentages);
+    void assignWeapon(String weaponName, double[] damagePercentages, WeaponCondition weaponCondition);
     double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide);
     }
 
 class Weapon implements weaponAbilities{
     private String weaponName;
-    //private double percentDamageLeftOpponent;
-    //rivate double percentDamageMiddleOpponent;
-   // private double percentDamageRightOpponent;
     private List<Double> percentDamageOpponents = new ArrayList<>();
-    ;
+    private WeaponCondition weaponCondition;
     public Weapon() {
 
     }
@@ -23,17 +21,25 @@ class Weapon implements weaponAbilities{
     public String getWeaponName() {
         return weaponName;
     }
-    public List<Double> getDamageOpponents() {
+    public List<Double> getPercentDamageOpponents() {
+
         return percentDamageOpponents;
     }
 
+    public WeaponCondition getWeaponCondition() {
+        return weaponCondition;
+    }
+
     @Override
-    public void assignWeapon(String weaponName, double[] damagePercentages) {
-        //System.out.println("MyClass is doing something!");
+    public void assignWeapon(String weaponName, double[] damagePercentages, WeaponCondition weaponCondition) {
         this.weaponName = weaponName;
-        for (int i = 0 ; i < damagePercentages.length ; i++) {
-            this.percentDamageOpponents.add(damagePercentages[i]);
+        this.weaponCondition = weaponCondition;
+        //this.percentDamageOpponents.clear();
+
+        for (double dmg : damagePercentages) {
+            this.percentDamageOpponents.add(dmg);
         }
+
     }
     @Override
     public double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide) {
@@ -50,10 +56,18 @@ class Weapon implements weaponAbilities{
         return damages;
     }
 
+
 }
 
 class NullWeapon extends Weapon{
     private String weaponName = "";
+    private WeaponCondition weaponCondition= new WeaponCondition() {
+        @Override
+        public boolean isActive(FillConditions fillConditions) {
+            return false;
+        }
+    };
+
     private List<Double> percentDamageOpponents = new ArrayList<>();
 
     public String getWeaponName() {
@@ -62,9 +76,12 @@ class NullWeapon extends Weapon{
     public List<Double> getDamageOpponents() {
         return percentDamageOpponents;
     }
+    public WeaponCondition getWeaponCondition() {
+        return weaponCondition;
+    }
 
     @Override
-    public void assignWeapon(String weaponName, double[] damagePercentages) {
+    public void assignWeapon(String weaponName, double[] damagePercentages, WeaponCondition weaponCondition) {
         System.out.println("No weapon selected");
         //this.weaponName = weaponName;
     }

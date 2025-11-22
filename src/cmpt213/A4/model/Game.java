@@ -1,5 +1,4 @@
 package cmpt213.A4.model;
-import cmpt213.A4.model.FillConditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,11 @@ public class Game {
     private int MIN_TURNS = 3;
     private int MAX_TURNS = 5;
     private int NUM_OPPONENTS = 3;
+    private int OPPONENT_HEALTH_DEFAULT = 100;
+    private int OPPONENT_HEALTH_LOW = 50;
+    private int OPPONENT_HEALTH_HIGH = 200;
+
+    private int OPPONENT_DAMAGE = 50;
     private Player player = new Player();
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard();
@@ -23,8 +27,6 @@ public class Game {
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
-        //player.equipWeapon(new NullWeapon());
-        //this.opponents = generateOpponents();
     }
     public Player getPlayer() {
         return player;
@@ -36,13 +38,19 @@ public class Game {
     public void generateOpponents() {
         opponents = new ArrayList<>();
         for (int i = 0; i < NUM_OPPONENTS; i++) {
-            opponents.add(new Opponent(200, 30));
+            opponents.add(new Opponent(OPPONENT_HEALTH_DEFAULT, OPPONENT_DAMAGE));
         }
     }
+    /*public void updateHealthOpponents(int health) {
+        List<Opponent> opponents = getOpponents();
+        for (int i = 0; i < NUM_OPPONENTS; i++) {
+            opponents.get
+            opponents.add(new Opponent(OPPONENT_HEALTH_DEFAULT, OPPONENT_DAMAGE));
+        }
+    }*/
     public void setTurnsUntilAttack() {
         Random random = new Random();
         int turnsUntilAttack = random.nextInt(MAX_TURNS - MIN_TURNS + 1) + MIN_TURNS;
-        System.out.println("turns until attack = "+ turnsUntilAttack);
         this.turnsUntilAttack = turnsUntilAttack;
     }
 
@@ -62,8 +70,6 @@ public class Game {
 
     public void updateFill(Cell cell) {
         cell.setFill(true);
-        //fillConditions.setNumFills(fillConditions.getNumFills() + 1);
-        //fillConditions.addNumFills();
         player.addNumFills();
         fillConditions.addCellValue(cell.getCurrentNumber());
         fillConditions.setLastSelectedColIndex(cell.getColumnIndex());
@@ -78,7 +84,6 @@ public class Game {
 
         Random random = new Random();
         int index = random.nextInt(opponents.size());
-        System.out.println("Selected opponent: " + opponents.get(index));
         return opponents.get(index);
     }
     public boolean opponentReadyForAttack() {
@@ -118,8 +123,6 @@ public class Game {
                 if(curCell != middleCell) {
                     int difference = userInput - middleValue;
                     if (difference == cellValue && !curCell.isFill()) {
-                        System.out.println("Found match");
-
                         return curCell;
                     }
                     if(difference == cellValue && curCell.isFill()) {
@@ -131,7 +134,6 @@ public class Game {
         if(!matchingCells.isEmpty()) {
            Random random = new Random();
            int index = random.nextInt(matchingCells.size());
-           System.out.println("index = "+ index);
            return matchingCells.get(index);
         }
         throw new IllegalArgumentException();
@@ -153,7 +155,7 @@ public class Game {
     }
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
-            //notifyObservers();
+            notifyObservers();
             return true;
         }
         return false;
@@ -171,30 +173,42 @@ public class Game {
     }
     public void attackOpponent() {
         Weapon equippedWeapon = player.getWeapon();
-        List<Double> damages = equippedWeapon.getDamageOpponents();
+        boolean activated = equippedWeapon.getWeaponCondition().isActive(fillConditions);
+
+        if (activated) {
+            System.out.println(equippedWeapon.getWeaponName() + " effect activated!");
+            applyWeaponDamage(equippedWeapon);
+
+        } else {
+            System.out.println(equippedWeapon.getWeaponName() + " effect did NOT activate.");
+        }
+        List<Double> percentDamageOpponents = equippedWeapon.getPercentDamageOpponents();
         //first attack selected opponent based on index
         int opponentIndex = fillConditions.getLastSelectedColIndex();
         Opponent selectedOpponent = opponents.get(opponentIndex);
         selectedOpponent.takeDamage(fillStrength);
         player.addDamageDealt(fillStrength);
-        System.out.println("opponent " + opponentIndex + " has " + selectedOpponent.getHealth() + " health");
-        for (int i = 0;i < damages.size();i++){
-            Opponent currentOpponent = opponents.get(i);
-            //      currentOpponent.takeDamage(fillStrength);
-            double weaponDamage = currentOpponent.getHealth() * damages.get(i);
-            currentOpponent.takeDamage((int) weaponDamage);
-            player.addDamageDealt((int) weaponDamage);
-            System.out.println("player attacks opponent " + i + " with " + weaponDamage);
-
-        }
-        System.out.println("Player is attacking opponent with " + equippedWeapon.getWeaponName());
-       player.dropWeapon();
-       System.out.println("player now should not have a weapon = " + equippedWeapon.getWeaponName());
+        //extracted(percentDamageOpponents);
+        //player.dropWeapon();
        notifyMoveObservers();
 
-        notifyObservers();
+        //notifyObservers();
     }
 
+    private void applyWeaponDamage(Weapon equippedWeapon) {
+        List<Double> percentDamageOpponents = equippedWeapon.getPercentDamageOpponents();
+
+        for (int i = 0; i < percentDamageOpponents.size(); i++){
+            Opponent currentOpponent = opponents.get(i);
+            double weaponDamage = currentOpponent.getHealth() * percentDamageOpponents.get(i);
+            currentOpponent.takeDamage((int) weaponDamage);
+            player.addDamageDealt((int) weaponDamage);
+
+        }
+    }
+    public void updateMatchStatus(boolean matchStatus) {
+        notifyMatchObservers(matchStatus);
+    }
 
     public boolean hasUserWon() {
         int numOpponentsDead = 0;
@@ -204,7 +218,7 @@ public class Game {
             }
         }
         if (numOpponentsDead == NUM_OPPONENTS){
-            notifyMatchObservers(true);
+            updateMatchStatus(true);
             System.out.println("you win, would you like to equip ?");
 
 
@@ -216,7 +230,7 @@ public class Game {
 
     public boolean hasOpponentWon() {
         if(player.didPlayerLose()) {
-            notifyMatchObservers(false);
+            updateMatchStatus(false);
             return true;
         }
         return false;

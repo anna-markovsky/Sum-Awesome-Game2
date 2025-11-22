@@ -1,5 +1,7 @@
 package cmpt213.A4.model;
 
+import cmpt213.A4.userinterface.TextUI;
+
 import java.util.*;
 public class StatsTracker {
     private List<String> events = Arrays.asList("Equipment Activations", "Matches:", "Total Damage", "Fills Completed");
@@ -20,10 +22,12 @@ public class StatsTracker {
         registerAsObserver();
         registerAsMoveObserver();
         registerAsMatchObserver();
+        registerAsUserInterfaceObserver();
     }
     public void addFillsCompleted() {
 
-        this.fillsCompleted = game.getPlayer().getNumFills();
+        //this.fillsCompleted = game.getPlayer().getNumFills();
+        this.fillsCompleted++;
     }
     public void addMatch(boolean matchWon) {
         if(matchWon) {
@@ -66,8 +70,7 @@ public class StatsTracker {
         game.addObserver(new PlayerAttackObserver() {
             @Override
             public void attackStateChanged() {
-                //updateAttacks();
-                updateEquipment();
+                addFillsCompleted();
                 printStats();
             }
         });
@@ -76,7 +79,7 @@ public class StatsTracker {
         game.addMoveObserver(new PlayerMoveObserver() {
             @Override
             public void moveStateChanged() {
-                addFillsCompleted();
+                //addFillsCompleted();
                 //updateAttacks();
                 updateDamageDealt();
                 updateDamageReceived();
@@ -88,19 +91,25 @@ public class StatsTracker {
         game.addMatchObserver(new MatchCompleteObserver() {
             @Override
             public void stateChanged(boolean matchWon) {
-
+                if(matchWon){
+                    updateEquipment();
+                }
                 addMatch(matchWon);
-                printStats();
             }
         });
     }
-    //public void updateEquipmentActivations(){
+    private void registerAsUserInterfaceObserver() {
+        TextUI.addUserInterfaceObserver(new UserInterfaceObserver() {
+            @Override
+            public void printRequestFromUI() {
+                printStats();
+            }
 
-    //}
+        });
+    }
 
     public void printStats() {
         int index = 0;
-        //while(index < events.size()) {
         System.out.println(events.get(index));
         index++;
         for (String i : equipmentActivations.keySet()) {
@@ -117,17 +126,6 @@ public class StatsTracker {
             System.out.println(i + " " +totalDamage.get(i));
         }
         System.out.println(events.get(index) + " " + fillsCompleted);
-        /*for (String i : equipmentActivations.keySet()) {
-            System.out.println("equipment: " + i + " Activated: " + equipmentActivations.get(i));
-        }
-        index++;
 
-        for (String i : matches.keySet()) {
-            System.out.println(i + matches.get(i));
-        }
-        for (String i : totalDamage.keySet()) {
-            System.out.println(i + totalDamage.get(i));
-        }
-        System.out.println("Fills Completed " + totalDamage.get(index));*/
     }
 }

@@ -3,6 +3,7 @@ package cmpt213.A4.userinterface;
 import cmpt213.A4.model.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,6 +12,8 @@ public class TextUI {
     private static final String FILL_SYMBOL = "_";
     private static final int ROW_LENGTH = 3;
     private Game game;
+    private static List<UserInterfaceObserver> observers = new ArrayList<UserInterfaceObserver>();
+
     //public Cell lastSelectedCell;
 
     public TextUI(Game game) {
@@ -41,14 +44,17 @@ public class TextUI {
                 game.attackOpponent();
                 //game.attackOpponent();
                 game.resetGameConditions();
+                startTime = System.nanoTime();
+
             }
             if (game.opponentReadyForAttack()) {
                 game.attackPlayer();
             }
 
-        doWonOrLost();
+            doWonOrLost();
         }
     }
+
     private boolean gameRunning() {
         return true;
         //return !game.hasUserWon() && !game.hasOpponentWon();
@@ -61,6 +67,7 @@ public class TextUI {
         System.out.println("------------------------");
         System.out.println();
     }
+
     public void displayHealthOpponents() {
         List<Opponent> opponents = game.getOpponents();
         opponents.stream().forEach(opponent -> {
@@ -69,6 +76,7 @@ public class TextUI {
             System.out.print(output);
         });
     }
+
     public void displayPlayerInfo() {
         Player player = game.getPlayer();
         String format = "[" + player.getPlayerHealth() + "]";
@@ -79,6 +87,7 @@ public class TextUI {
 
         //System.out.println("[ " + player.getPlayerHealth() + " ]       Fill Strength: " + game.fillStrength);
     }
+
     //TODO fix the column format
     public void displayBoard(boolean revealBoard) {
         System.out.println();
@@ -93,12 +102,11 @@ public class TextUI {
             for (int col = 0; col < GameBoard.NUM_COLS; col++) {
                 Cell cell = game.getCellState(row, col);
                 int symbol = cell.getCurrentNumber();
-                if(cell.isFill()){
-                    String format = FILL_SYMBOL  + symbol + FILL_SYMBOL;
+                if (cell.isFill()) {
+                    String format = FILL_SYMBOL + symbol + FILL_SYMBOL;
                     output += String.format("%-7s", format);
                     //output +=  FILL_SYMBOL  + symbol + FILL_SYMBOL + "   ";
-                }
-                else {
+                } else {
                     String format = NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL;
                     output += String.format("%-7s", format);
 
@@ -119,6 +127,7 @@ public class TextUI {
             switch (input.toLowerCase()) {
                 case "gear":
                     System.out.println("Player Gear Inventory: ");
+                    System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
                     // TODO handle gear
                     break;
                 case "cheat":
@@ -127,11 +136,13 @@ public class TextUI {
                     break;
                 case "stats":
                     System.out.println("Player Stats: ");
-                    // TODO handle stats
+                    notifyUIObservers();
                     break;
                 case "new":
                     System.out.println("Starting new game...");
-                    // TODO handle new
+                    game.updateMatchStatus(false);
+                    game.startNewMatch();
+                    displayBoard(false);
                     break;
                 default:
                     try {
@@ -156,8 +167,7 @@ public class TextUI {
             System.out.print("Player Turn was successful. ");
             //this.lastSelectedCell = matchingCell;
             //return matchingCell;
-        }
-        catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Invalid sum. Opponent will attack.");
             game.attackPlayer();
         }
@@ -174,6 +184,20 @@ public class TextUI {
         } else {
             assert false;
         }
-        //displayBoard(true);
+    }
+
+
+    /*
+     * Functions to support being observable.
+     * ------------------------------------------------------
+     */
+    public static void addUserInterfaceObserver(UserInterfaceObserver observer) {
+        observers.add(observer);
+    }
+
+    private static void notifyUIObservers() {
+        for (UserInterfaceObserver observer : observers) {
+            observer.printRequestFromUI();
+        }
     }
 }

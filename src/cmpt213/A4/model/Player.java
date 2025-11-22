@@ -2,7 +2,7 @@ package cmpt213.A4.model;
 import cmpt213.A4.model.*;
 public class Player {
     //private List<>
-    private final int DEFAULT_HEALTH = 200;
+    private final int DEFAULT_HEALTH = 400;
     private final int MAX_NUM_RINGS = 3;
     private int health;
     private int damageReceived = 0;
@@ -12,8 +12,18 @@ public class Player {
     //private Rings.Ring[] rings;
 
     public Player() {
+        NullWeapon nullWeapon = new NullWeapon();
+        nullWeapon.assignWeapon(
+                "",
+                new double[]{0.0, 0.0, 0.0},
+                new WeaponCondition() {
+                    @Override
+                    public boolean isActive(FillConditions fillConditions) {
+                        return false;
+                    }
+                });
         this.health = DEFAULT_HEALTH;
-        this.weaponEquipped = new NullWeapon();
+        this.weaponEquipped = nullWeapon;
         this.damageDealt = 0;
         this.damageReceived = 0;
         this.numFills = 0;
@@ -33,13 +43,16 @@ public class Player {
         this.weaponEquipped = weapon;
     }
     public void dropWeapon(){
+
         this.weaponEquipped = new NullWeapon();
     }
 
     public Weapon getWeapon() {
         return weaponEquipped;
     }
-
+    public String outputWeaponInventory () {
+        return weaponEquipped.getWeaponName();
+    }
     public int getDamageReceived() {
         return damageReceived;
     }
@@ -52,9 +65,14 @@ public class Player {
 
     }
     public void decreaseHealth(int damageReceived){
-
-        this.health -= damageReceived;
-        this.damageReceived +=  damageReceived;
+       // if (this.health - damageReceived==0) {
+       //     this.damageReceived -= health;
+        //    this.health = 0;
+        //}
+        //else {
+            this.health -= damageReceived;
+            this.damageReceived += damageReceived;
+        //}
         System.out.println("damage recieved " + this.damageReceived);
 
     }

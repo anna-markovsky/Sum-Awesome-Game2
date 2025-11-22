@@ -57,6 +57,19 @@ public class FillConditions {
         return selectedCellValues.size();
 
     }
+    public boolean checkNumFills(int minNumberFills) {
+        if(calculateNumFills() >= minNumberFills) {
+            return true;
+        }
+        return false;
+    }
+    public boolean checkTime(int minSeconds) {
+        if(getSecondsTaken() <= minSeconds && getSecondsTaken() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkAddedCellsAscending() {
         if(selectedCellValues.isEmpty()) {
             return false;
@@ -87,17 +100,7 @@ public class FillConditions {
             }
             maxValue = selectedCellValues.get(i);
         }
-
-        //this.isAscending = allDescending;
         return true;
     }
-    public boolean isAscending() {
 
-        return isAscending;
-    }
-
-    public boolean isDescending() {
-
-        return isDescending;
-    }
 }
