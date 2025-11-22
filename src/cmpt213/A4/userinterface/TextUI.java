@@ -2,7 +2,7 @@ package cmpt213.A4.userinterface;
 
 import cmpt213.A4.model.*;
 
-
+import java.lang.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,23 +27,20 @@ public class TextUI {
         long startTime = System.nanoTime();
 
         while (gameRunning()) {
-            displayHealthOpponents();
-            displayBoard(false);
-            displayPlayerInfo();
+            displayBoardWithInfo();
             //long startTime = System.nanoTime();
             doPlayerTurn();
 
             if (game.playerReadyForAttack()) {
-                //isAttackDone = true;
-                //doOpponentTurn();
                 long endTime = System.nanoTime();
                 long elapsedTimeNanos = endTime - startTime;
                 double durationSeconds = (double) elapsedTimeNanos / 1_000_000_000.0;
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
                 game.attackOpponent();
+
                 printRingActivationMsgs();
-                game.resetGameConditions();
+                game.resetGameConditions(false);
                 startTime = System.nanoTime();
 
             }
@@ -79,6 +76,11 @@ public class TextUI {
         System.out.println();
     }
 
+    public void displayBoardWithInfo() {
+        displayHealthOpponents();
+        displayBoard(false);
+        displayPlayerInfo();
+    }
     public void displayHealthOpponents() {
         List<Opponent> opponents = game.getOpponents();
         opponents.stream().forEach(opponent -> {
@@ -133,18 +135,23 @@ public class TextUI {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("Enter a sum (or 'gear', 'cheat', 'stats', 'new'): ");
-            String input = scanner.nextLine().trim();
-            switch (input.toLowerCase()) {
-                case "gear":
-                    System.out.println("Player Gear Inventory: ");
-                    System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
-                    // TODO handle gear
-                    break;
+                    System.out.print("Enter a sum (or 'gear', 'cheat', 'stats', 'new'): ");
+                    String input = scanner.nextLine().trim().toLowerCase();
+                    String inputWithArgs[] = input.split("\\s+", 2);
+
+            switch (inputWithArgs[0]) {
+                        case "gear":
+                            System.out.println("Player Gear Inventory: ");
+                            System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
+                            break;
                 case "cheat":
-                    System.out.println("Cheat activated (TODO)");
-                    // TODO handle cheat
+                    if (inputWithArgs.length == 1) {
+                        System.out.println("Cheat argument not provided.");
+                    } else {
+                        handleCheatArguments(inputWithArgs[1]);
+                    }
                     break;
+
                 case "stats":
                     System.out.println("Player Stats: ");
                     notifyUIObservers();
@@ -153,7 +160,7 @@ public class TextUI {
                     System.out.println("Starting new game...");
                     game.updateMatchStatus(false);
                     game.startNewMatch();
-                    displayBoard(false);
+                    displayBoardWithInfo();
                     break;
                 default:
                     try {
@@ -163,6 +170,60 @@ public class TextUI {
                         System.out.println("Invalid entry. Please enter a number or a valid command.");
                     }
             }
+        }
+    }
+
+    private void handleCheatArguments(String args) {
+        String inputWithArgs[] = args.split("\\s+");
+
+        switch (inputWithArgs[0]) {
+            case "lowhealth":
+                game.updateHealthOpponents(game.OPPONENT_HEALTH_LOW);
+                break;
+            case "highhealth":
+                game.updateHealthOpponents(game.OPPONENT_HEALTH_HIGH);
+                break;
+            case "weapons":
+                selectWeaponToEquip(inputWithArgs[1]);
+                break;
+            case "max":
+                selectMaxFillValue(inputWithArgs[1]);
+        }
+
+    }
+    private void selectMaxFillValue(String args) {
+        try {
+            int maxbound = Integer.parseInt(args);
+            if (maxbound <= 0) {
+                System.out.println("The max bound must be greater than 0");
+            }
+            else {
+                game.updateMaxBoundCustom(maxbound+1);
+            }
+        }catch (NumberFormatException e) {
+            System.out.println("Invalid entry. Please enter a number or a valid command.");
+        }
+
+    }
+    private void selectWeaponToEquip(String args) {
+        try {
+            int weaponNum = Integer.parseInt(args);
+            List<Weapon> availableWeapons = game.getAllWeaponsList();
+            for (int i = 0;i < availableWeapons.size();i++) {
+                System.out.println("weapon is " + availableWeapons.get(i).getWeaponName());
+            }
+            if(weaponNum == 0){
+                game.getPlayer().dropWeapon();
+            }
+            if(weaponNum > 0 && weaponNum <= availableWeapons.size()){
+                Weapon selectedWeapon = availableWeapons.get(weaponNum - 1);
+                System.out.println("weapon is equipped here textui");
+                game.getPlayer().equipWeapon(selectedWeapon);
+            }
+            else {
+                throw new NumberFormatException("Invalid entry. No weapon exists for provided number");
+            }
+        } catch (NumberFormatException e) {
         }
     }
 

@@ -3,9 +3,11 @@ import java.util.*;
 public class GameBoard {
     private final int MIDDLE_INDEX_ROW = 1;
     private final int MIDDLE_INDEX_COL = 1;
-    //private final int GAMEBOARD_SIZE = 9;
     public static final int NUM_ROWS = 3;
     public static final int NUM_COLS = 3;
+    public static final int DEFAULT_MAX_BOUND = 16;
+    private int maxBound;
+
     private final Cell[][] board = new Cell[NUM_ROWS][NUM_COLS];
 
     /*public Iterator<Cell> iterator() {
@@ -29,14 +31,19 @@ public class GameBoard {
             }
         };
     }*/
+    public void setMaxBound(int maxBound) {
+        this.maxBound = maxBound;
+    }
+
     public Cell getCell(int row, int col) {
         return board[row][col];
     }
     //initialize game board
-    public GameBoard() {
+    public GameBoard(int maxBound) {
+        this.maxBound = maxBound;
         for (int row = 0; row < NUM_ROWS; row++) {
             for (int col = 0; col < NUM_COLS; col++) {
-                Cell gameCell = new Cell(row, col);
+                Cell gameCell = new Cell(row, col, maxBound);
                 if (row == MIDDLE_INDEX_ROW && col == MIDDLE_INDEX_COL) {
                     gameCell.setMiddle(true);
                 }
@@ -60,7 +67,7 @@ public class GameBoard {
         int row = cell.getRowIndex();
         int col = cell.getColumnIndex();
 
-        Cell newCell = new Cell(row, col);
+        Cell newCell = new Cell(row, col, maxBound);
         newCell.setFill(true);
         board[row][col] = newCell;
     }

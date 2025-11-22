@@ -71,6 +71,7 @@ public class StatsTracker {
             @Override
             public void attackStateChanged() {
                 addFillsCompleted();
+                updateEquipment();
                 printStats();
             }
         });
@@ -91,9 +92,9 @@ public class StatsTracker {
         game.addMatchObserver(new MatchCompleteObserver() {
             @Override
             public void stateChanged(boolean matchWon) {
-                if(matchWon){
-                    updateEquipment();
-                }
+                //if(matchWon){
+                 //   updateEquipment();
+                //}
                 addMatch(matchWon);
             }
         });

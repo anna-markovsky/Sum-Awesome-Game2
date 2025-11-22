@@ -35,9 +35,9 @@ public class Cell {
     }
 
     //create cell with a random number 0-15
-    public Cell(int rowIndex, int columnIndex) {
+    public Cell(int rowIndex, int columnIndex, int maxbound) {
         Random random = new Random();
-        this.currentNumber = random.nextInt(16);
+        this.currentNumber = random.nextInt(maxbound);
         this.isMiddle = false;
         this.isFill = false;
         this.rowIndex = rowIndex;

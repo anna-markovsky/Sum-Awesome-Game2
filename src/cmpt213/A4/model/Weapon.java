@@ -10,7 +10,7 @@ interface weaponAbilities {
     double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide);
     }
 
-class Weapon implements weaponAbilities{
+public class Weapon implements weaponAbilities{
     private String weaponName;
     private List<Double> percentDamageOpponents = new ArrayList<>();
     private WeaponCondition weaponCondition;

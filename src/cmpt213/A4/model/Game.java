@@ -6,33 +6,43 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Game {
-    //public int playerHealth = 600;
     public int fillStrength = 0;
     private int turnsUntilAttack;
     private int MIN_TURNS = 3;
     private int MAX_TURNS = 5;
-    private int NUM_OPPONENTS = 3;
-    private int OPPONENT_HEALTH_DEFAULT = 100;
-    private int OPPONENT_HEALTH_LOW = 50;
-    private int OPPONENT_HEALTH_HIGH = 200;
-
+    public int NUM_OPPONENTS = 3;
+    public int DEFAULT_MAX_BOUND = 16;
+    public int OPPONENT_HEALTH_DEFAULT = 100;
+    public int OPPONENT_HEALTH_LOW = 50;
+    public int OPPONENT_HEALTH_HIGH = 200;
     private int OPPONENT_DAMAGE = 50;
     private Player player = new Player();
     private List<Opponent> opponents;
-    private GameBoard board = new GameBoard();
+    private GameBoard board = new GameBoard(DEFAULT_MAX_BOUND);
     private FillConditions fillConditions = new FillConditions();
     private RingManager ringManager = new RingManager();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
     private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
+    private final WeaponManager weaponManager;
+    public int currentMaxBound;
+
 
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
+
         ringManager.equipRing(ringManager.getAllRings().get(2));
         ringManager.equipRing(ringManager.getAllRings().get(0));
         ringManager.equipRing(ringManager.getAllRings().get(0));
+        this.weaponManager = new WeaponManager(this);
+        this.currentMaxBound = DEFAULT_MAX_BOUND;
+
     }
+    public List<Weapon> getAllWeaponsList() {
+        return weaponManager.getAllWeapons();
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -46,13 +56,13 @@ public class Game {
             opponents.add(new Opponent(OPPONENT_HEALTH_DEFAULT, OPPONENT_DAMAGE));
         }
     }
-    /*public void updateHealthOpponents(int health) {
-        List<Opponent> opponents = getOpponents();
-        for (int i = 0; i < NUM_OPPONENTS; i++) {
-            opponents.get
-            opponents.add(new Opponent(OPPONENT_HEALTH_DEFAULT, OPPONENT_DAMAGE));
-        }
-    }*/
+    public void updateHealthOpponents(int health) {
+         List<Opponent> opponents = getOpponents();
+         for (int i = 0; i < NUM_OPPONENTS; i++) {
+             Opponent currentOpponent = opponents.get(i);
+             currentOpponent.setHealth(health);
+         }
+     }
     public void setTurnsUntilAttack() {
         Random random = new Random();
         int turnsUntilAttack = random.nextInt(MAX_TURNS - MIN_TURNS + 1) + MIN_TURNS;
@@ -110,6 +120,14 @@ public class Game {
         board.replaceMatchingCell(cell);
     }
 
+    public void setCurrentMaxBound(int maxBound) {
+        this.currentMaxBound = maxBound;
+    }
+    public void updateMaxBoundCustom(int maxbound) {
+        setCurrentMaxBound(maxbound);
+        board.setMaxBound(maxbound);
+    }
+
     //function for player move
     //first check if there are any matching cells
     //if 1 matching cell, add current cell to fill, and replace middle with matching cell
@@ -144,15 +162,20 @@ public class Game {
         throw new IllegalArgumentException();
     }
 
-    public void resetGameConditions() {
-        board = new GameBoard();
+    public void resetGameConditions(boolean isMatchComplete) {
+        if(isMatchComplete) {
+            this.currentMaxBound = DEFAULT_MAX_BOUND;
+
+        }
+        //this.currentMaxBound = DEFAULT_MAX_BOUND;
+        board = new GameBoard(currentMaxBound);
         fillStrength = 0;
         fillConditions = new FillConditions();
         setTurnsUntilAttack();
     }
 
     public void startNewMatch() {
-        resetGameConditions();
+        resetGameConditions(true);
         generateOpponents();
         player.resetPlayerHealth();
     }
