@@ -38,6 +38,8 @@ public class TextUI {
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
                 game.attackOpponent();
+
+                printRingActivationMsgs();
                 game.resetGameConditions(false);
                 startTime = System.nanoTime();
 
@@ -48,6 +50,17 @@ public class TextUI {
 
             doWonOrLost();
         }
+    }
+
+    private void printRingActivationMsgs(){
+        List<String> msgs = game.getActivationMsgs();
+        for (String msg : msgs) {
+            System.out.println(msg);
+        }
+    }
+
+    private void displayRingBonus(){
+        System.out.println();
     }
 
     private boolean gameRunning() {

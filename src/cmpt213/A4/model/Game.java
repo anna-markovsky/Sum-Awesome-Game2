@@ -20,15 +20,21 @@ public class Game {
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard(DEFAULT_MAX_BOUND);
     private FillConditions fillConditions = new FillConditions();
+    private RingManager ringManager = new RingManager();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
     private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
     private final WeaponManager weaponManager;
     public int currentMaxBound;
 
+
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
+
+        ringManager.equipRing(ringManager.getAllRings().get(2));
+        ringManager.equipRing(ringManager.getAllRings().get(0));
+        ringManager.equipRing(ringManager.getAllRings().get(0));
         this.weaponManager = new WeaponManager(this);
         this.currentMaxBound = DEFAULT_MAX_BOUND;
 
@@ -168,8 +174,6 @@ public class Game {
         setTurnsUntilAttack();
     }
 
-
-
     public void startNewMatch() {
         resetGameConditions(true);
         generateOpponents();
@@ -193,7 +197,14 @@ public class Game {
        // notifyObservers();
 
     }
+
+    public List<String> getActivationMsgs(){
+        return ringManager.getActivationMsgs();
+    }
+
     public void attackOpponent() {
+        fillStrength = ringManager.calculateTotalMultiplier(fillStrength);
+
         Weapon equippedWeapon = player.getWeapon();
         boolean activated = equippedWeapon.getWeaponCondition().isActive(fillConditions);
 
@@ -287,6 +298,4 @@ public class Game {
             observer.stateChanged(matchWon);
         }
     }
-
-
 }
