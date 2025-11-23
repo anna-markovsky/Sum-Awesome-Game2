@@ -38,6 +38,7 @@ public class TextUI {
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
                 game.attackOpponent();
+                printRingActivationMsgs();
                 game.resetGameConditions(false);
                 startTime = System.nanoTime();
 
