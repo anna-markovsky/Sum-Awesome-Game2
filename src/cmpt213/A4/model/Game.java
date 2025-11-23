@@ -207,7 +207,14 @@ public class Game {
        // notifyObservers();
 
     }
+
+    public List<String> getActivationMsgs(){
+        return ringManager.getActivationMsgs();
+    }
+
     public void attackOpponent() {
+        fillStrength = ringManager.calculateTotalMultiplier(fillStrength);
+
         Weapon equippedWeapon = player.getWeapon();
         boolean activated = equippedWeapon.getWeaponCondition().isActive(fillConditions);
 
