@@ -51,6 +51,16 @@ public class TextUI {
         }
     }
 
+    private void printRingActivationMsgs(){
+        List<String> msgs = game.getActivationMsgs();
+        for (String msg : msgs) {
+            System.out.println(msg);
+        }
+    }
+
+    private void displayRingBonus(){
+        System.out.println();
+    }
     private boolean gameRunning() {
         return true;
         //return !game.hasUserWon() && !game.hasOpponentWon();
