@@ -27,13 +27,24 @@ public class Game {
     private final WeaponManager weaponManager;
     public int currentMaxBound;
     private RingManager ringManager = new RingManager();
-    
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
+
+        ringManager.equipRing(ringManager.getAllRings().get(0));
+        ringManager.equipRing(ringManager.getAllRings().get(0));
+        ringManager.equipRing(ringManager.getAllRings().get(0));
         this.weaponManager = new WeaponManager(this);
         this.currentMaxBound = DEFAULT_MAX_BOUND;
 
+    }
+
+    public void equipRing(int ringIndex){
+        ringManager.equipRing(ringManager.getAllRings().get(ringIndex));
+    }
+
+    public List<Ring> getAllRingsList(){
+        return ringManager.getAllRings();
     }
     public List<Weapon> getAllWeaponsList() {
         return weaponManager.getAllWeapons();
