@@ -2,13 +2,14 @@ package cmpt213.A4.model;
 import cmpt213.A4.model.*;
 public class Player {
     //private List<>
-    private final int DEFAULT_HEALTH = 600;
+    private final int DEFAULT_HEALTH = 400;
     private final int MAX_NUM_RINGS = 3;
     private int health;
     private int damageReceived = 0;
     private Weapon weaponEquipped;
     private int damageDealt = 0;
     private int numFills;
+    //private Rings.Ring[] rings;
 
     public Player() {
         NullWeapon nullWeapon = new NullWeapon();
@@ -38,7 +39,6 @@ public class Player {
         this.numFills = numFills + 1;
     }
     public void equipWeapon(Weapon weapon) {
-        System.out.println("equipping weapon here " + weapon.getWeaponName());
         this.weaponEquipped = weapon;
     }
     public void dropWeapon(){
@@ -60,7 +60,6 @@ public class Player {
     }
     public void addDamageDealt(int damageDealt) {
         this.damageDealt += damageDealt;
-        System.out.println("damage dealt " + this.damageDealt);
 
     }
     public void decreaseHealth(int damageReceived){
@@ -72,7 +71,6 @@ public class Player {
             this.health -= damageReceived;
             this.damageReceived += damageReceived;
         //}
-        System.out.println("damage recieved " + this.damageReceived);
 
     }
 

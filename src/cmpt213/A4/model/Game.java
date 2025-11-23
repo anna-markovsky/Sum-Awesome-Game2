@@ -12,22 +12,21 @@ public class Game {
     private int MAX_TURNS = 5;
     public int NUM_OPPONENTS = 3;
     public int DEFAULT_MAX_BOUND = 16;
-    public int OPPONENT_HEALTH_DEFAULT = 50;
-    public int OPPONENT_HEALTH_LOW = 50;
-    public int OPPONENT_HEALTH_HIGH = 200;
+    public int OPPONENT_HEALTH_DEFAULT = 100;
+    public double OPPONENT_HEALTH_LOW_PERCENTAGE = 0.2;
+    public double OPPONENT_HEALTH_HIGH_PERCENTAGE = 1.5;
     private int OPPONENT_DAMAGE = 50;
     private Player player = new Player();
     private List<Opponent> opponents;
     private GameBoard board = new GameBoard(DEFAULT_MAX_BOUND);
     private FillConditions fillConditions = new FillConditions();
-    private RingManager ringManager = new RingManager();
     private List<PlayerAttackObserver> observers = new ArrayList<PlayerAttackObserver>();
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
     private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
+    private List<AttackInfoObserver> attackInfoObservers = new ArrayList<>();
     private final WeaponManager weaponManager;
     public int currentMaxBound;
-
-
+    private RingManager ringManager = new RingManager();
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
@@ -47,7 +46,6 @@ public class Game {
     public List<Ring> getAllRingsList(){
         return ringManager.getAllRings();
     }
-
     public List<Weapon> getAllWeaponsList() {
         return weaponManager.getAllWeapons();
     }
@@ -55,7 +53,6 @@ public class Game {
     public Player getPlayer() {
         return player;
     }
-
     public FillConditions getFillConditions() {
         return fillConditions;
     }
@@ -66,11 +63,12 @@ public class Game {
             opponents.add(new Opponent(OPPONENT_HEALTH_DEFAULT, OPPONENT_DAMAGE));
         }
     }
-    public void updateHealthOpponents(int health) {
+    public void updateHealthOpponents(double healthPercentage) {
          List<Opponent> opponents = getOpponents();
          for (int i = 0; i < NUM_OPPONENTS; i++) {
              Opponent currentOpponent = opponents.get(i);
-             currentOpponent.setHealth(health);
+             double newHealthValue = healthPercentage * currentOpponent.getHealth();
+             currentOpponent.setHealth((int) newHealthValue);
          }
      }
     public void setTurnsUntilAttack() {
@@ -103,6 +101,7 @@ public class Game {
         notifyMoveObservers();
     }
 
+
     public Opponent selectRandomOpponent(){
         List<Opponent> opponents = getAliveOpponents();
 
@@ -110,10 +109,10 @@ public class Game {
         int index = random.nextInt(opponents.size());
         return opponents.get(index);
     }
-
     public boolean opponentReadyForAttack() {
         return (turnsUntilAttack == 0);
     }
+
 
     public void updateFillTime(double durationSeconds) {
 
@@ -183,12 +182,13 @@ public class Game {
         setTurnsUntilAttack();
     }
 
+
+
     public void startNewMatch() {
         resetGameConditions(true);
         generateOpponents();
         player.resetPlayerHealth();
     }
-
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
             notifyObservers();
@@ -219,37 +219,39 @@ public class Game {
         boolean activated = equippedWeapon.getWeaponCondition().isActive(fillConditions);
 
         if (activated) {
-            System.out.println(equippedWeapon.getWeaponName() + " effect activated!");
             applyWeaponDamage(equippedWeapon);
 
-        } else {
-            System.out.println(equippedWeapon.getWeaponName() + " effect did NOT activate.");
         }
         List<Double> percentDamageOpponents = equippedWeapon.getPercentDamageOpponents();
         //first attack selected opponent based on index
         int opponentIndex = fillConditions.getLastSelectedColIndex();
         Opponent selectedOpponent = opponents.get(opponentIndex);
+
         selectedOpponent.takeDamage(fillStrength);
         player.addDamageDealt(fillStrength);
-        //extracted(percentDamageOpponents);
-        //player.dropWeapon();
-       notifyMoveObservers();
+        notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
 
-        //notifyObservers();
+        notifyMoveObservers();
+
     }
 
     private void applyWeaponDamage(Weapon equippedWeapon) {
         List<Double> percentDamageOpponents = equippedWeapon.getPercentDamageOpponents();
-
+        double[] damageRecieved = new double[percentDamageOpponents.size()];
         for (int i = 0; i < percentDamageOpponents.size(); i++){
             Opponent currentOpponent = opponents.get(i);
             double weaponDamage = currentOpponent.getHealth() * percentDamageOpponents.get(i);
+            if(currentOpponent.getHealth() <= 0) {
+                damageRecieved[i] = 0;
+            }
+            else {
+                damageRecieved[i] = weaponDamage;
+            }
             currentOpponent.takeDamage((int) weaponDamage);
             player.addDamageDealt((int) weaponDamage);
-
         }
+        notifyAttackInfoObservers(equippedWeapon.getWeaponName(), damageRecieved);
     }
-
     public void updateMatchStatus(boolean matchStatus) {
         notifyMatchObservers(matchStatus);
     }
@@ -263,10 +265,6 @@ public class Game {
         }
         if (numOpponentsDead == NUM_OPPONENTS){
             updateMatchStatus(true);
-            System.out.println("you win, would you like to equip ?");
-
-
-
             return true;
         }
         return false;
@@ -296,20 +294,34 @@ public class Game {
     public void addMoveObserver(PlayerMoveObserver observer) {
         moveObservers.add(observer);
     }
-
     private void notifyMoveObservers() {
         for (PlayerMoveObserver observer : moveObservers) {
             observer.moveStateChanged();
         }
     }
-
     public void addMatchObserver(MatchCompleteObserver observer) {
         matchObservers.add(observer);
     }
-
     private void notifyMatchObservers(boolean matchWon) {
         for (MatchCompleteObserver observer : matchObservers) {
             observer.stateChanged(matchWon);
         }
     }
+
+    public void addAttackInfoObserver(AttackInfoObserver observer) {
+        attackInfoObservers.add(observer);
+    }
+    private void notifyFillAttackInfoObservers(int fillStrength, Opponent selectedOpponent,int opponentIndex) {
+        for (AttackInfoObserver observer : attackInfoObservers) {
+            observer.getFillAttackInformation(fillStrength, selectedOpponent, opponentIndex);
+        }
+    }
+
+    private void notifyAttackInfoObservers(String weaponName, double[] damages) {
+        for (AttackInfoObserver observer : attackInfoObservers) {
+            observer.getAttackInformation(weaponName, damages);
+        }
+    }
+
+
 }

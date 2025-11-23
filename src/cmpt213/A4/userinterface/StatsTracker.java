@@ -1,6 +1,6 @@
-package cmpt213.A4.model;
+package cmpt213.A4.userinterface;
 
-import cmpt213.A4.userinterface.TextUI;
+import cmpt213.A4.model.*;
 
 import java.util.*;
 public class StatsTracker {
@@ -14,6 +14,7 @@ public class StatsTracker {
     private int damageReceived;
     private int matchesWon;
     private int matchesLost;
+    public String[] opponentsCorrespondingToIndex = {"Left", "Middle", "Right"};
     private Game game;
 
     public StatsTracker(Game game){
@@ -23,6 +24,7 @@ public class StatsTracker {
         registerAsMoveObserver();
         registerAsMatchObserver();
         registerAsUserInterfaceObserver();
+        registerAsAttackInfoObserver();
     }
     public void addFillsCompleted() {
 
@@ -92,13 +94,24 @@ public class StatsTracker {
         game.addMatchObserver(new MatchCompleteObserver() {
             @Override
             public void stateChanged(boolean matchWon) {
-                //if(matchWon){
-                 //   updateEquipment();
-                //}
                 addMatch(matchWon);
             }
         });
     }
+    private void registerAsAttackInfoObserver() {
+        game.addAttackInfoObserver(new AttackInfoObserver() {
+            @Override
+            public void getAttackInformation(String weaponName, double[] damageRecieved) {
+                printAttackInfo(weaponName, damageRecieved);
+            }
+
+            @Override
+            public void getFillAttackInformation(int damageRecieved, Opponent selectedOpponent, int opponentIndex) {
+                printFillAttackInfo(damageRecieved, selectedOpponent, opponentIndex);
+            }
+        });
+    }
+
     private void registerAsUserInterfaceObserver() {
         TextUI.addUserInterfaceObserver(new UserInterfaceObserver() {
             @Override
@@ -108,13 +121,37 @@ public class StatsTracker {
 
         });
     }
+    public void printFillAttackInfo(int damageRecieved,Opponent selectedOpponent, int opponentIndex) {
+        System.out.println("Fill strength " + damageRecieved + ".");
+        if(selectedOpponent.getHealth() == 0) {
+            System.out.println("Missed " +  opponentsCorrespondingToIndex[opponentIndex] + " character.");
+        }
+        else {
+            System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
+                    + damageRecieved + " damage.");
+        }
+    }
+
+    public void printAttackInfo(String weaponName, double[] damageRecieved) {
+        for (int i =0; i < damageRecieved.length; i++) {
+            System.out.println(weaponName + " targets " + opponentsCorrespondingToIndex[i]);
+
+            if((int) damageRecieved[i] == 0) {
+                System.out.println("Misses " + opponentsCorrespondingToIndex[i] + " character.");
+            }
+            else{
+                System.out.println("Hits " + opponentsCorrespondingToIndex[i]
+                        + " character for " + (int) damageRecieved[i] + ".");
+            }
+        }
+    }
 
     public void printStats() {
         int index = 0;
         System.out.println(events.get(index));
         index++;
         for (String i : equipmentActivations.keySet()) {
-            System.out.println("equipment: " + i + " Activated: " + equipmentActivations.get(i));
+            System.out.println( i + "  " + equipmentActivations.get(i));//TODO fix this
         }
         System.out.println(events.get(index));
         index++;

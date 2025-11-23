@@ -9,28 +9,6 @@ public class GameBoard {
     private int maxBound;
 
     private final Cell[][] board = new Cell[NUM_ROWS][NUM_COLS];
-
-    /*public Iterator<Cell> iterator() {
-        return new Iterator<Cell>() {
-            int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < cells.size();
-            }
-
-            @Override
-            public Cell next() {
-                assert hasNext();
-                return cells.get(index++);
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }*/
     public void setMaxBound(int maxBound) {
         this.maxBound = maxBound;
     }
@@ -79,7 +57,6 @@ public class GameBoard {
                     continue;
                 }
                 if (!board[row][col].isFill()) {
-                    System.out.println("this is the cell row and col" + row+ col);
                     return false;
                 }
             }

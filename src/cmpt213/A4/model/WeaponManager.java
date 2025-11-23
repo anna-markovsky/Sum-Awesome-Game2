@@ -9,10 +9,12 @@ interface WeaponCondition {
 public class WeaponManager {
     private Game game;
     public List<Weapon> allWeapons = new ArrayList<>();
+
     public WeaponManager() {
         createAllWeapons(game.getFillConditions());
 
     }
+
     public WeaponManager(Game game) {
         this.game = game;
         this.allWeapons.addAll(createAllWeapons(game.getFillConditions()));
@@ -23,6 +25,7 @@ public class WeaponManager {
     public List<Weapon> getAllWeapons() {
         return allWeapons;
     }
+
     private void registerAsObserver() {
         game.addObserver(new PlayerAttackObserver() {
             @Override
@@ -36,13 +39,14 @@ public class WeaponManager {
         game.addMatchObserver(new MatchCompleteObserver() {
             @Override
             public void stateChanged(boolean matchWon) {
-                if(matchWon){
-                    selectRandomWeapon();
+                if (matchWon) {
+                    equipRandomWeapon();
                 }
                 //selectRandomWeapon();
             }
         });
     }
+
     private int assignRandomOpponentDamage() {
         Random random = new Random();
         //List<Opponent> opponents = game.getOpponents();
@@ -51,14 +55,13 @@ public class WeaponManager {
     }
 
 
-    private void selectRandomWeapon() {
+    private void equipRandomWeapon() {
         FillConditions fillConditions = game.getFillConditions();
         Player player = game.getPlayer();
         //List<Weapon> weaponsAvailable = createAllWeapons(fillConditions);
         Random random = new Random();
         int index = random.nextInt(allWeapons.size());
-        Weapon tempWeapon = allWeapons.get(index);
-        player.equipWeapon(tempWeapon);
+        player.equipWeapon(allWeapons.get(index));
     }
 
 
@@ -175,7 +178,7 @@ public class WeaponManager {
         }*/
         qualifingWeapons.add(sparkleDagger);
         //allWeapons.add(sparkleDagger);
-        if(allWeapons.isEmpty()) {
+        if (allWeapons.isEmpty()) {
             NullWeapon nullWeapon = new NullWeapon();
             nullWeapon.assignWeapon(
                     "",
@@ -192,80 +195,4 @@ public class WeaponManager {
         }
         return qualifingWeapons;
     }
-
-
-    private Weapon determineWeapon(FillConditions fillConditions) {
-        //check if any of the conditions for a weapon were met
-        if (fillConditions.checkAddedCellsAscending()) {
-            System.out.println("frost bow");
-            Weapon weapon = new Weapon();
-            double[] damagePercentages = {1.0,1.0,1.0};
-           // weapon.assignWeapon("frost bow", damagePercentages);
-            return weapon;
-
-        }
-        if (fillConditions.checkAddedCellsDescending()) {
-            System.out.println("diamond sword");
-            Weapon weapon = new Weapon();
-            int colIndex = game.getFillConditions().getLastSelectedColIndex();
-            double[] damagePercentages = weapon.assignDamagePercentages(colIndex, 1.0, 0.75);
-            //weapon.assignWeapon("diamond sword", damagePercentages);
-            return weapon;
-        }
-        if (fillConditions.calculateNumFills() >= 10) {
-            if (fillConditions.calculateNumFills() >= 15) {
-                System.out.println("Fire staff");
-                Weapon weapon = new Weapon();
-                int colIndex = game.getFillConditions().getLastSelectedColIndex();
-                double[] damagePercentages = weapon.assignDamagePercentages(colIndex, 1.0, 0.5);
-
-                //weapon.assignWeapon("fire staff", damagePercentages);
-                return weapon;
-
-            } else {
-                System.out.println("Stone hammer");
-                Weapon weapon = new Weapon();
-                int colIndex = game.getFillConditions().getLastSelectedColIndex();
-
-                double[] damagePercentages = weapon.assignDamagePercentages(colIndex, 0.8, 0.8);
-               // weapon.assignWeapon("stone hammer", damagePercentages);
-                return weapon;
-
-            }
-        }
-        System.out.println("Seconds taken "+ game.getFillConditions().getSecondsTaken() );
-        if (game.getFillConditions().getSecondsTaken() <= 30 && game.getFillConditions().getSecondsTaken() > 0) {
-            if (game.getFillConditions().getSecondsTaken() <= 20 ) {
-                Weapon weapon = new Weapon();
-                int mainIndex = assignRandomOpponentDamage();
-                double[] damagePercentages = weapon.assignDamagePercentages(mainIndex, 1.0,0.0);
-                //weapon.assignWeapon("lightning wand", damagePercentages);
-
-                System.out.println("seconds taken "+ fillConditions.getSecondsTaken());
-                System.out.println("lightning wand");
-                return weapon;
-            }
-            else {
-                Weapon weapon = new Weapon();
-                int mainIndex = assignRandomOpponentDamage();
-                double[] damagePercentages = weapon.assignDamagePercentages(mainIndex, 0.5,0.0);
-               // weapon.assignWeapon("sparkle dagger", damagePercentages);
-
-                System.out.println("Sparkle dagger");
-                return weapon;
-            }
-
-        }
-        else {
-            System.out.println("nothing");
-            NullWeapon nullWeapon = new NullWeapon();
-            double[] damagePercentages = {0.0,0.0,0.0};
-           // nullWeapon.assignWeapon("",damagePercentages);
-            return nullWeapon;
-        }
-
-    }}
-
-
-
-
+}

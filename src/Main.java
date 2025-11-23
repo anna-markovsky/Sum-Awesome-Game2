@@ -1,5 +1,5 @@
 import cmpt213.A4.model.Game;
-import cmpt213.A4.model.StatsTracker;
+import cmpt213.A4.userinterface.StatsTracker;
 import cmpt213.A4.model.WeaponManager;
 import cmpt213.A4.userinterface.TextUI;
 

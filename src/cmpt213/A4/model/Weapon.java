@@ -82,8 +82,6 @@ class NullWeapon extends Weapon{
 
     @Override
     public void assignWeapon(String weaponName, double[] damagePercentages, WeaponCondition weaponCondition) {
-        System.out.println("No weapon selected");
-        //this.weaponName = weaponName;
     }
     @Override
     public double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide) {

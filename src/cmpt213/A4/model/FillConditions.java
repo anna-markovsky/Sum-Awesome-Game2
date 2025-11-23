@@ -26,20 +26,7 @@ public class FillConditions {
         this.secondsTaken = secondsTaken;
     }
 
-/*
-    public int getNumFills() {
 
-        return numFills;
-    }
-    public void setNumFills(int numFills) {
-
-        this.numFills = numFills;
-    }
-    public void addNumFills() {
-        System.out.println("New num numfills " + numFills+1);
-
-        this.numFills = numFills + 1;
-    }*/
     public int getLastSelectedColIndex() {
         return lastSelectedColIndex;
     }
@@ -77,16 +64,12 @@ public class FillConditions {
         int minValue = selectedCellValues.get(0);
         boolean allAscending = true;
         for (int i = 0; i < selectedCellValues.size(); i++) {
-            System.out.println("CELL VALUES" + selectedCellValues.get(i));
             if (selectedCellValues.get(i) < minValue) {
-                //allAscending = false;
                 return false;
-                //break;
             }
             minValue = selectedCellValues.get(i);
         }
         return true;
-        //this.isAscending = allAscending;
     }
     public boolean checkAddedCellsDescending() {
         if(selectedCellValues.isEmpty()) {

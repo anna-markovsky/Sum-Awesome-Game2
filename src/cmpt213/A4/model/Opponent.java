@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Opponent {
     private int health;
-    private int damageRecieved;
     private int damage;
 
     public Opponent(int health, int damage){
@@ -29,11 +28,5 @@ public class Opponent {
         else{
             health -= damage;
         }
-    }
-    //TODO attack player
-
-    public static void attack(){
-
-        System.out.println("Attacking player");
     }
 }

@@ -5,14 +5,11 @@ import cmpt213.A4.model.*;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 public class TextUI {
     private static final String NOTFILL_SYMBOL = " ";
     private static final String FILL_SYMBOL = "_";
-    private static final int WEAPON_NUM = 0;
-    private static final int RING_NUM = 1;
     private static final int ROW_LENGTH = 3;
     private Game game;
     private static List<UserInterfaceObserver> observers = new ArrayList<UserInterfaceObserver>();
@@ -41,7 +38,6 @@ public class TextUI {
                 game.updateFillTime(durationSeconds);
                 System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
                 game.attackOpponent();
-
                 printRingActivationMsgs();
                 game.resetGameConditions(false);
                 startTime = System.nanoTime();
@@ -65,7 +61,6 @@ public class TextUI {
     private void displayRingBonus(){
         System.out.println();
     }
-
     private boolean gameRunning() {
         return true;
         //return !game.hasUserWon() && !game.hasOpponentWon();
@@ -81,7 +76,7 @@ public class TextUI {
 
     public void displayBoardWithInfo() {
         displayHealthOpponents();
-        displayBoard(false);
+        displayBoard();
         displayPlayerInfo();
     }
     public void displayHealthOpponents() {
@@ -100,19 +95,11 @@ public class TextUI {
 
         String secondHalf = "Fill Strength: " + game.fillStrength;
         System.out.println(firstHalf + secondHalf);
-
-        //System.out.println("[ " + player.getPlayerHealth() + " ]       Fill Strength: " + game.fillStrength);
     }
 
-    //TODO fix the column format
-    public void displayBoard(boolean revealBoard) {
+    public void displayBoard() {
         System.out.println();
-        //List<Opponent> opps = game.getOpponents();
-        //for(int i = 0; i < 3; i++){
-        //    System.out.print("[" + opps.get(i).getHealth() + "] ");
-        //}
 
-        // Print rows:
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
             for (int col = 0; col < GameBoard.NUM_COLS; col++) {
@@ -121,7 +108,6 @@ public class TextUI {
                 if (cell.isFill()) {
                     String format = FILL_SYMBOL + symbol + FILL_SYMBOL;
                     output += String.format("%-7s", format);
-                    //output +=  FILL_SYMBOL  + symbol + FILL_SYMBOL + "   ";
                 } else {
                     String format = NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL;
                     output += String.format("%-7s", format);
@@ -131,7 +117,6 @@ public class TextUI {
             System.out.println(output);
             System.out.println();
         }
-        //System.out.println("[" + game.getPlayerHealth() + "] Fill Strength: " + game.getFillStrength());
     }
 
     private int getPlayerMove() {
@@ -181,10 +166,10 @@ public class TextUI {
 
         switch (inputWithArgs[0]) {
             case "lowhealth":
-                game.updateHealthOpponents(game.OPPONENT_HEALTH_LOW);
+                game.updateHealthOpponents(game.OPPONENT_HEALTH_LOW_PERCENTAGE);
                 break;
             case "highhealth":
-                game.updateHealthOpponents(game.OPPONENT_HEALTH_HIGH);
+                game.updateHealthOpponents(game.OPPONENT_HEALTH_HIGH_PERCENTAGE);
                 break;
             case "weapons":
                 selectWeaponToEquip(inputWithArgs[1]);
@@ -212,9 +197,6 @@ public class TextUI {
         try {
             int weaponNum = Integer.parseInt(args);
             List<Weapon> availableWeapons = game.getAllWeaponsList();
-            for (int i = 0;i < availableWeapons.size();i++) {
-                System.out.println("weapon is " + availableWeapons.get(i).getWeaponName());
-            }
             if(weaponNum == 0){
                 game.getPlayer().dropWeapon();
             }
@@ -248,6 +230,7 @@ public class TextUI {
         }
         //return null;
     }
+
 
     private void promptGiveRandomItem(){
         Scanner scanner = new Scanner(System.in);
