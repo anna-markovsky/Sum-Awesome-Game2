@@ -12,7 +12,7 @@ public class Game {
     private int MAX_TURNS = 5;
     public int NUM_OPPONENTS = 3;
     public int DEFAULT_MAX_BOUND = 16;
-    public int OPPONENT_HEALTH_DEFAULT = 100;
+    public int OPPONENT_HEALTH_DEFAULT = 50;
     public int OPPONENT_HEALTH_LOW = 50;
     public int OPPONENT_HEALTH_HIGH = 200;
     private int OPPONENT_DAMAGE = 50;
@@ -32,13 +32,22 @@ public class Game {
         generateOpponents();
         setTurnsUntilAttack();
 
-        ringManager.equipRing(ringManager.getAllRings().get(2));
+        ringManager.equipRing(ringManager.getAllRings().get(0));
         ringManager.equipRing(ringManager.getAllRings().get(0));
         ringManager.equipRing(ringManager.getAllRings().get(0));
         this.weaponManager = new WeaponManager(this);
         this.currentMaxBound = DEFAULT_MAX_BOUND;
 
     }
+
+    public void equipRing(int ringIndex){
+        ringManager.equipRing(ringManager.getAllRings().get(ringIndex));
+    }
+
+    public List<Ring> getAllRingsList(){
+        return ringManager.getAllRings();
+    }
+
     public List<Weapon> getAllWeaponsList() {
         return weaponManager.getAllWeapons();
     }
@@ -46,6 +55,7 @@ public class Game {
     public Player getPlayer() {
         return player;
     }
+
     public FillConditions getFillConditions() {
         return fillConditions;
     }
@@ -93,7 +103,6 @@ public class Game {
         notifyMoveObservers();
     }
 
-
     public Opponent selectRandomOpponent(){
         List<Opponent> opponents = getAliveOpponents();
 
@@ -101,10 +110,10 @@ public class Game {
         int index = random.nextInt(opponents.size());
         return opponents.get(index);
     }
+
     public boolean opponentReadyForAttack() {
         return (turnsUntilAttack == 0);
     }
-
 
     public void updateFillTime(double durationSeconds) {
 
@@ -179,6 +188,7 @@ public class Game {
         generateOpponents();
         player.resetPlayerHealth();
     }
+
     public boolean playerReadyForAttack() {
         if (board.isWholeBoardFill()) {
             notifyObservers();
@@ -239,6 +249,7 @@ public class Game {
 
         }
     }
+
     public void updateMatchStatus(boolean matchStatus) {
         notifyMatchObservers(matchStatus);
     }
@@ -285,14 +296,17 @@ public class Game {
     public void addMoveObserver(PlayerMoveObserver observer) {
         moveObservers.add(observer);
     }
+
     private void notifyMoveObservers() {
         for (PlayerMoveObserver observer : moveObservers) {
             observer.moveStateChanged();
         }
     }
+
     public void addMatchObserver(MatchCompleteObserver observer) {
         matchObservers.add(observer);
     }
+
     private void notifyMatchObservers(boolean matchWon) {
         for (MatchCompleteObserver observer : matchObservers) {
             observer.stateChanged(matchWon);

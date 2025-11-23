@@ -19,6 +19,7 @@ public class WeaponManager {
         registerAsObserver();
         registerAsMatchObserver();
     }
+
     public List<Weapon> getAllWeapons() {
         return allWeapons;
     }

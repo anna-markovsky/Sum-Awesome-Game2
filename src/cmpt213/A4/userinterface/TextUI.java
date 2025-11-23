@@ -5,11 +5,14 @@ import cmpt213.A4.model.*;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class TextUI {
     private static final String NOTFILL_SYMBOL = " ";
     private static final String FILL_SYMBOL = "_";
+    private static final int WEAPON_NUM = 0;
+    private static final int RING_NUM = 1;
     private static final int ROW_LENGTH = 3;
     private Game game;
     private static List<UserInterfaceObserver> observers = new ArrayList<UserInterfaceObserver>();
@@ -246,9 +249,32 @@ public class TextUI {
         //return null;
     }
 
+    private void promptGiveRandomItem(){
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        if(random.nextInt(2) == WEAPON_NUM){
+            int weaponIndex = random.nextInt(game.getAllWeaponsList().size());
+            Weapon newWeapon = game.getAllWeaponsList().get(weaponIndex);
+            System.out.println("You've found " + newWeapon.getWeaponName() + "! Do you want to equip it? (y/n): ");
+            String input = scanner.nextLine().toLowerCase();
+            if(input.equals("y")){
+                game.getPlayer().equipWeapon(newWeapon);
+            }
+        }else {
+            int ringIndex = random.nextInt(game.getAllRingsList().size());
+            Ring newRing = game.getAllRingsList().get(ringIndex);
+            System.out.println("You've found " + newRing.getName() + "! Do you want to equip it? (y/n): ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if(input.equals("y")){
+                game.equipRing(ringIndex);
+            }
+        }
+    }
+
     private void doWonOrLost() {
         if (game.hasUserWon()) {
             System.out.println("Congratulations! You won!");
+            promptGiveRandomItem();
             game.startNewMatch();
         } else if (game.hasOpponentWon()) {
             System.out.println("I'm sorry, you have no health left! They win!");
