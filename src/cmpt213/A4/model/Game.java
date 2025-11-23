@@ -77,6 +77,13 @@ public class Game {
         this.turnsUntilAttack = turnsUntilAttack;
     }
 
+    public List<Ring> getEquippedRings(){
+        return ringManager.getEquippedRings();
+    }
+
+    public void unequipRing(Ring ring){
+        ringManager.unequipRing(ring);
+    }
 
     public List<Opponent> getOpponents() {
         return opponents;

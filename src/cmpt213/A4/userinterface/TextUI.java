@@ -5,6 +5,7 @@ import cmpt213.A4.model.*;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class TextUI {
@@ -235,7 +236,7 @@ public class TextUI {
     private void promptGiveRandomItem(){
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
-        if(random.nextInt(2) == WEAPON_NUM){
+        if(random.nextInt(2) == 0){
             int weaponIndex = random.nextInt(game.getAllWeaponsList().size());
             Weapon newWeapon = game.getAllWeaponsList().get(weaponIndex);
             System.out.println("You've found " + newWeapon.getWeaponName() + "! Do you want to equip it? (y/n): ");
@@ -249,7 +250,27 @@ public class TextUI {
             System.out.println("You've found " + newRing.getName() + "! Do you want to equip it? (y/n): ");
             String input = scanner.nextLine().trim().toLowerCase();
             if(input.equals("y")){
-                game.equipRing(ringIndex);
+                List<Ring> equippedRings = game.getEquippedRings();
+                for(Ring ring : equippedRings){
+                    System.out.println(ring.getName());
+                }
+                System.out.println("Which ring do you want to replace? (1-3): ");
+                String x = scanner.nextLine();
+                if(x.equals("1")){
+                    Ring unequipRing = equippedRings.get(0);
+                    game.unequipRing(unequipRing);
+                    game.equipRing(ringIndex);
+                }else if(x.equals("2")){
+                    Ring unequipRing = equippedRings.get(1);
+                    game.unequipRing(unequipRing);
+                    game.equipRing(ringIndex);
+                }else if(x.equals("3")){
+                    Ring unequipRing = equippedRings.get(2);
+                    game.unequipRing(unequipRing);
+                    game.equipRing(ringIndex);
+                }else{
+                    System.out.println("Invalid number. No rings replaced.");
+                }
             }
         }
     }
