@@ -26,7 +26,8 @@ public class Game {
     private List<AttackInfoObserver> attackInfoObservers = new ArrayList<>();
     private final WeaponManager weaponManager;
     public int currentMaxBound;
-
+    private RingManager ringManager = new RingManager();
+    
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
