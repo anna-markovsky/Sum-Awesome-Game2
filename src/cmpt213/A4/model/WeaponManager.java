@@ -19,7 +19,7 @@ public class WeaponManager {
         this.game = game;
         this.allWeapons.addAll(createAllWeapons(game.getFillConditions()));
         registerAsObserver();
-        registerAsMatchObserver();
+        //registerAsMatchObserver();
     }
 
     public List<Weapon> getAllWeapons() {
@@ -35,17 +35,19 @@ public class WeaponManager {
         });
     }
 
-    private void registerAsMatchObserver() {
+    /*private void registerAsMatchObserver() {
         game.addMatchObserver(new MatchCompleteObserver() {
             @Override
             public void stateChanged(boolean matchWon) {
                 if (matchWon) {
-                    equipRandomWeapon();
+                    Player player = game.getPlayer();
+                    player.dropWeapon();
+                    //equipRandomWeapon();
                 }
                 //selectRandomWeapon();
             }
         });
-    }
+    }*/
 
     private int assignRandomOpponentDamage() {
         Random random = new Random();

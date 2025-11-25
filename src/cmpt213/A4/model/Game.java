@@ -24,6 +24,12 @@ public class Game {
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
     private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
     private List<AttackInfoObserver> attackInfoObservers = new ArrayList<>();
+    private long gameTime;
+    public long getGameTime() {
+        return gameTime;
+    }
+
+
     private final WeaponManager weaponManager;
     public int currentMaxBound;
     private RingManager ringManager = new RingManager();
@@ -193,6 +199,7 @@ public class Game {
 
     public void startNewMatch() {
         resetGameConditions(true);
+        //player.dropWeapon();
         generateOpponents();
         player.resetPlayerHealth();
     }

@@ -14,6 +14,8 @@ public class TextUI {
     private static final int WEAPON_NUM = 0;
     private static final int RING_NUM = 1;
     private static final int ROW_LENGTH = 3;
+    private long startTime;
+    private boolean timingStarted = false;
     private Game game;
     private static List<UserInterfaceObserver> observers = new ArrayList<UserInterfaceObserver>();
 
@@ -26,14 +28,14 @@ public class TextUI {
     public void playGame() {
         game.startNewMatch();
         displayWelcome();
-        //displayBoard(false);
-        long startTime = System.nanoTime();
-
+        startTime = System.nanoTime();
         while (gameRunning()) {
-            displayBoardWithInfo();
-            //long startTime = System.nanoTime();
-            doPlayerTurn();
+            //startTime = System.nanoTime();
 
+            displayBoardWithInfo();
+            //startTime += System.nanoTime();
+
+            doPlayerTurn();
             if (game.playerReadyForAttack()) {
                 long endTime = System.nanoTime();
                 long elapsedTimeNanos = endTime - startTime;
@@ -49,7 +51,6 @@ public class TextUI {
             if (game.opponentReadyForAttack()) {
                 game.attackPlayer();
             }
-
             doWonOrLost();
         }
     }
@@ -152,6 +153,7 @@ public class TextUI {
                 case "new":
                     System.out.println("Starting new game...");
                     game.updateMatchStatus(false);
+                    game.getPlayer().dropWeapon();
                     game.startNewMatch();
                     displayBoardWithInfo();
                     break;
@@ -181,6 +183,9 @@ public class TextUI {
                 break;
             case "max":
                 selectMaxFillValue(inputWithArgs[1]);
+                break;
+            default:
+                System.out.println("Invalid entry. Please enter a valid command.");
         }
 
     }
@@ -205,7 +210,7 @@ public class TextUI {
             if(weaponNum == 0){
                 game.getPlayer().dropWeapon();
             }
-            if(weaponNum > 0 && weaponNum <= availableWeapons.size()){
+            else if(weaponNum > 0 && weaponNum <= availableWeapons.size()){
                 Weapon selectedWeapon = availableWeapons.get(weaponNum - 1);
                 game.getPlayer().equipWeapon(selectedWeapon);
             }
@@ -222,6 +227,10 @@ public class TextUI {
         try {
             Cell matchingCell = game.getMatchingCell(sum);
             game.updateFill(matchingCell);
+            if (!timingStarted) {
+                startTime = System.nanoTime();
+                timingStarted = true;
+            }
 
             game.updateMiddleCell(matchingCell);
             game.updateMatchingCellPosition(matchingCell);
@@ -282,10 +291,12 @@ public class TextUI {
     private void doWonOrLost() {
         if (game.hasUserWon()) {
             System.out.println("Congratulations! You won!");
+            game.getPlayer().dropWeapon();
             promptGiveRandomItem();
             game.startNewMatch();
         } else if (game.hasOpponentWon()) {
             System.out.println("I'm sorry, you have no health left! They win!");
+            game.getPlayer().dropWeapon();
             game.startNewMatch();
         } else {
             assert false;
