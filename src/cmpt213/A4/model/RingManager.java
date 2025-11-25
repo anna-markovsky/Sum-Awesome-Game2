@@ -106,8 +106,8 @@ public class RingManager {
         equippedRings.add(ring);
     }
 
-    public void unequipRing(Ring ring) {
-        equippedRings.remove(ring);
+    public void unequipRing(int index) {
+        equippedRings.remove(index);
     }
 
     public List<Ring> getEquippedRings() {

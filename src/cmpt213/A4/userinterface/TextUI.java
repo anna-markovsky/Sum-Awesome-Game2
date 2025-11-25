@@ -134,10 +134,16 @@ public class TextUI {
                     String inputWithArgs[] = input.split("\\s+", 2);
 
             switch (inputWithArgs[0]) {
-                        case "gear":
-                            System.out.println("Player Gear Inventory: ");
-                            System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
-                            break;
+                case "gear":
+                    System.out.println("Player Gear Inventory: ");
+                    System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
+                    System.out.println("Rings: ");
+                    for(Ring ring : game.getEquippedRings()){
+                        if(!ring.getName().isEmpty()){
+                            System.out.println(ring.getName());
+                        }
+                    }
+                    break;
                 case "cheat":
                     if (inputWithArgs.length == 1) {
                         System.out.println("Cheat argument not provided.");
@@ -181,6 +187,8 @@ public class TextUI {
             case "weapons":
                 selectWeaponToEquip(inputWithArgs[1]);
                 break;
+            case "rings":
+                selectRingToEquip(inputWithArgs);
             case "max":
                 selectMaxFillValue(inputWithArgs[1]);
                 break;
@@ -201,8 +209,8 @@ public class TextUI {
         }catch (NumberFormatException e) {
             System.out.println("Invalid entry. Please enter a number or a valid command.");
         }
-
     }
+
     private void selectWeaponToEquip(String args) {
         try {
             int weaponNum = Integer.parseInt(args);
@@ -219,6 +227,13 @@ public class TextUI {
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid entry. No weapon exists for provided input.");
+        }
+    }
+
+    private void selectRingToEquip(String[] args){
+        for(int i = 1; i < 4; i++){
+            game.unequipRing(i - 1);
+            game.equipRing(Integer.parseInt(args[i]));
         }
     }
 
@@ -263,24 +278,28 @@ public class TextUI {
             if(input.equals("y")){
                 List<Ring> equippedRings = game.getEquippedRings();
                 for(Ring ring : equippedRings){
-                    System.out.println(ring.getName());
+                    if(!ring.getName().isEmpty()){
+                        System.out.println(ring.getName());
+                    }else{
+                        System.out.println("Empty slot");
+                    }
                 }
-                System.out.println("Which ring do you want to replace? (1-3): ");
+                System.out.println("Which slot do you want to replace? (1-3): ");
                 String x = scanner.nextLine();
                 switch (x) {
                     case "1" -> {
                         Ring unequipRing = equippedRings.get(0);
-                        game.unequipRing(unequipRing);
+                        game.unequipRing(0);
                         game.equipRing(ringIndex);
                     }
                     case "2" -> {
                         Ring unequipRing = equippedRings.get(1);
-                        game.unequipRing(unequipRing);
+                        game.unequipRing(1);
                         game.equipRing(ringIndex);
                     }
                     case "3" -> {
                         Ring unequipRing = equippedRings.get(2);
-                        game.unequipRing(unequipRing);
+                        game.unequipRing(2);
                         game.equipRing(ringIndex);
                     }
                     default -> System.out.println("Invalid number. No rings replaced.");
