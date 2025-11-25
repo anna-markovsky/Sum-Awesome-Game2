@@ -5,12 +5,14 @@ import cmpt213.A4.model.*;
 import java.lang.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
+import java.util.*;
 
 public class TextUI {
     private static final String NOTFILL_SYMBOL = " ";
     private static final String FILL_SYMBOL = "_";
+    private static final int WEAPON_NUM = 0;
+    private static final int RING_NUM = 1;
     private static final int ROW_LENGTH = 3;
     private Game game;
     private static List<UserInterfaceObserver> observers = new ArrayList<UserInterfaceObserver>();
@@ -80,7 +82,6 @@ public class TextUI {
         displayBoard();
         displayPlayerInfo();
     }
-
     public void displayHealthOpponents() {
         List<Opponent> opponents = game.getOpponents();
         opponents.stream().forEach(opponent -> {
@@ -104,6 +105,8 @@ public class TextUI {
 
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
+            output += String.format("%-1s", output);
+
             for (int col = 0; col < GameBoard.NUM_COLS; col++) {
                 Cell cell = game.getCellState(row, col);
                 int symbol = cell.getCurrentNumber();
@@ -204,13 +207,13 @@ public class TextUI {
             }
             if(weaponNum > 0 && weaponNum <= availableWeapons.size()){
                 Weapon selectedWeapon = availableWeapons.get(weaponNum - 1);
-                System.out.println("weapon is equipped here textui");
                 game.getPlayer().equipWeapon(selectedWeapon);
             }
             else {
                 throw new NumberFormatException("Invalid entry. No weapon exists for provided number");
             }
         } catch (NumberFormatException e) {
+            System.out.println("Invalid entry. No weapon exists for provided input.");
         }
     }
 
@@ -223,13 +226,12 @@ public class TextUI {
             game.updateMiddleCell(matchingCell);
             game.updateMatchingCellPosition(matchingCell);
 
-            System.out.print("Player Turn was successful. ");
             //this.lastSelectedCell = matchingCell;
             //return matchingCell;
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid sum. Opponent will attack.");
             game.attackPlayer();
         }
+        //return null;
     }
 
 
@@ -277,7 +279,6 @@ public class TextUI {
             }
         }
     }
-
     private void doWonOrLost() {
         if (game.hasUserWon()) {
             System.out.println("Congratulations! You won!");
@@ -290,6 +291,7 @@ public class TextUI {
             assert false;
         }
     }
+
 
     /*
      * Functions to support being observable.
