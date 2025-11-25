@@ -132,10 +132,18 @@ public class TextUI {
                     String inputWithArgs[] = input.split("\\s+", 2);
 
             switch (inputWithArgs[0]) {
-                        case "gear":
-                            System.out.println("Player Gear Inventory: ");
-                            System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
-                            break;
+
+            switch (inputWithArgs[0]) {
+                case "gear":
+                    System.out.println("Player Gear Inventory: ");
+                    System.out.println("Weapon: " + game.getPlayer().outputWeaponInventory());
+                    System.out.println("Rings: ");
+                    for(Ring ring : game.getEquippedRings()){
+                        if(!ring.getName().isEmpty()){
+                            System.out.println(ring.getName());
+                        }
+                    }
+                    break;
                 case "cheat":
                     if (inputWithArgs.length == 1) {
                         System.out.println("Cheat argument not provided.");
