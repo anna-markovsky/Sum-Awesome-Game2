@@ -1,32 +1,27 @@
 package cmpt213.A4.model;
 
 import java.util.*;
-
+/**
+ * A class that gathers information about the fill such as time taken to complete,
+ * number of cells, and the order cells were collected, which are used for activating weapons.
+ */
 public class FillConditions {
     private List<Integer> selectedCellValues = new ArrayList<>();
     private double secondsTaken;
-    //private int numFills;
     private boolean isAscending;
     private boolean isDescending;
     private int lastSelectedColIndex;
-
-    public FillConditions(){
-        //this.selectedCellValues = new int[0];
+    public FillConditions() {
         this.secondsTaken = 0.0;
-        //this.numFills = 0;
         this.isAscending = false;
         this.isDescending = false;
     }
-
     public double getSecondsTaken() {
-
         return secondsTaken;
     }
     public void setSecondsTaken(double secondsTaken) {
         this.secondsTaken = secondsTaken;
     }
-
-
     public int getLastSelectedColIndex() {
         return lastSelectedColIndex;
     }

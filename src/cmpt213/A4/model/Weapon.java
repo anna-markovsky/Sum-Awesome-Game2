@@ -4,7 +4,10 @@ package cmpt213.A4.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+/**
+ * A class for generating weapon objects, and using a weapon ability interface to assign the amount of
+ * damage each weapon can apply, as well as the fill condition required to activate such weapon, or Null weapon by default.
+ */
 interface weaponAbilities {
     void assignWeapon(String weaponName, double[] damagePercentages, WeaponCondition weaponCondition);
     double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide);
@@ -15,31 +18,23 @@ public class Weapon implements weaponAbilities{
     private List<Double> percentDamageOpponents = new ArrayList<>();
     private WeaponCondition weaponCondition;
     public Weapon() {
-
     }
-
     public String getWeaponName() {
         return weaponName;
     }
     public List<Double> getPercentDamageOpponents() {
-
         return percentDamageOpponents;
     }
-
     public WeaponCondition getWeaponCondition() {
         return weaponCondition;
     }
-
     @Override
     public void assignWeapon(String weaponName, double[] damagePercentages, WeaponCondition weaponCondition) {
         this.weaponName = weaponName;
         this.weaponCondition = weaponCondition;
-        //this.percentDamageOpponents.clear();
-
         for (double dmg : damagePercentages) {
             this.percentDamageOpponents.add(dmg);
         }
-
     }
     @Override
     public double[] assignDamagePercentages(int colIndex, double damageMain, double damageSide) {
@@ -47,7 +42,6 @@ public class Weapon implements weaponAbilities{
         for (int i = 0 ; i < 3; i++) {
             if (i == colIndex) {
                 damages[i] = damageMain;
-
             }
             else {
                 damages[i] = damageSide;
@@ -55,8 +49,6 @@ public class Weapon implements weaponAbilities{
         }
         return damages;
     }
-
-
 }
 
 class NullWeapon extends Weapon{

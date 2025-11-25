@@ -1,77 +1,49 @@
 package cmpt213.A4.model;
 
 import java.util.*;
-
+/**
+ * A class for managing, creating and storing weapons. This class creates the weapon objects and assigns an
+ * interface for checking if a weapon is activated depending on the fill condition of the current match.
+ */
 interface WeaponCondition {
     boolean isActive(FillConditions fillConditions);
 }
-
 public class WeaponManager {
     private Game game;
     public List<Weapon> allWeapons = new ArrayList<>();
-
     public WeaponManager() {
         createAllWeapons(game.getFillConditions());
-
     }
-
     public WeaponManager(Game game) {
         this.game = game;
         this.allWeapons.addAll(createAllWeapons(game.getFillConditions()));
         registerAsObserver();
-        //registerAsMatchObserver();
     }
-
     public List<Weapon> getAllWeapons() {
         return allWeapons;
     }
-
     private void registerAsObserver() {
         game.addObserver(new PlayerAttackObserver() {
             @Override
             public void attackStateChanged() {
-                //selectRandomWeapon();
             }
         });
     }
-
-    /*private void registerAsMatchObserver() {
-        game.addMatchObserver(new MatchCompleteObserver() {
-            @Override
-            public void stateChanged(boolean matchWon) {
-                if (matchWon) {
-                    Player player = game.getPlayer();
-                    player.dropWeapon();
-                    //equipRandomWeapon();
-                }
-                //selectRandomWeapon();
-            }
-        });
-    }*/
-
     private int assignRandomOpponentDamage() {
         Random random = new Random();
-        //List<Opponent> opponents = game.getOpponents();
         int index = random.nextInt(game.getOpponents().size());
         return index;
     }
-
-
     private void equipRandomWeapon() {
         FillConditions fillConditions = game.getFillConditions();
         Player player = game.getPlayer();
-        //List<Weapon> weaponsAvailable = createAllWeapons(fillConditions);
         Random random = new Random();
         int index = random.nextInt(allWeapons.size());
         player.equipWeapon(allWeapons.get(index));
     }
-
-
     private List<Weapon> createAllWeapons(FillConditions fillConditions) {
         List<Weapon> qualifingWeapons = new ArrayList<>();
-        //allWeapons.clear();
         int randIndex = assignRandomOpponentDamage();
-
         int colIndex = game.getFillConditions().getLastSelectedColIndex();
         Weapon frostBow = new Weapon();
         frostBow.assignWeapon(
@@ -84,17 +56,8 @@ public class WeaponManager {
                     }
                 }
         );
-        /*if(frostBow.getWeaponCondition().isActive(fillConditions)) {
-            qualifingWeapons.add(frostBow);
-            //player.equipWeapon(frostBow);
-        }*/
         qualifingWeapons.add(frostBow);
-
-        //allWeapons.add(frostBow);
         Weapon diamondSword = new Weapon();
-        //int colIndex = game.getFillConditions().getLastSelectedColIndex();
-        //double[] damagePercentages = diamondSword.assignDamagePercentages(colIndex, 1.0, 0.75);
-
         diamondSword.assignWeapon(
                 "diamond sword",
                 diamondSword.assignDamagePercentages(colIndex, 1.0, 0.75),
@@ -105,13 +68,7 @@ public class WeaponManager {
                     }
                 }
         );
-        /*if(diamondSword.getWeaponCondition().isActive(fillConditions)) {
-            qualifingWeapons.add(diamondSword);
-            //player.equipWeapon(diamondSword);
-        }*/
         qualifingWeapons.add(diamondSword);
-
-        //allWeapons.add(diamondSword);
         Weapon fireStaff = new Weapon();
         fireStaff.assignWeapon(
                 "fire staff",
@@ -123,12 +80,7 @@ public class WeaponManager {
                     }
                 }
         );
-        /*if(fireStaff.getWeaponCondition().isActive(fillConditions)) {
-            //player.equipWeapon(fireStaff);
-            qualifingWeapons.add(fireStaff);
-        }*/
         qualifingWeapons.add(fireStaff);
-        //allWeapons.add(fireStaff);
         Weapon stoneHammer = new Weapon();
         stoneHammer.assignWeapon(
                 "stone hammer",
@@ -140,12 +92,7 @@ public class WeaponManager {
                     }
                 }
         );
-        /*if(stoneHammer.getWeaponCondition().isActive(fillConditions)) {
-            //player.equipWeapon(fireStaff);
-            qualifingWeapons.add(stoneHammer);
-        }*/
         qualifingWeapons.add(stoneHammer);
-        //allWeapons.add(stoneHammer);
         Weapon lightningWand = new Weapon();
         lightningWand.assignWeapon(
                 "lightning wand",
@@ -157,11 +104,6 @@ public class WeaponManager {
                     }
                 }
         );
-        //allWeapons.add(lightningWand);
-        /*if(lightningWand.getWeaponCondition().isActive(fillConditions)) {
-            //player.equipWeapon(fireStaff);
-            qualifingWeapons.add(lightningWand);
-        }*/
         qualifingWeapons.add(lightningWand);
         Weapon sparkleDagger = new Weapon();
         sparkleDagger.assignWeapon(
@@ -170,15 +112,11 @@ public class WeaponManager {
                 new WeaponCondition() {
                     @Override
                     public boolean isActive(FillConditions fillConditions) {
-                        return fillConditions.checkTime(15);
+                        return fillConditions.checkTime(20);
                     }
                 }
         );
-        /*if(sparkleDagger.getWeaponCondition().isActive(fillConditions)) {
-            qualifingWeapons.add(sparkleDagger);
-        }*/
         qualifingWeapons.add(sparkleDagger);
-        //allWeapons.add(sparkleDagger);
         if (allWeapons.isEmpty()) {
             NullWeapon nullWeapon = new NullWeapon();
             nullWeapon.assignWeapon(
@@ -191,8 +129,6 @@ public class WeaponManager {
                         }
                     }
             );
-            //qualifingWeapons.add(nullWeapon);
-            //allWeapons.add(nullWeapon);
         }
         return qualifingWeapons;
     }

@@ -1,5 +1,9 @@
 package cmpt213.A4.model;
 import java.util.*;
+/**
+ * A class for creating the cells that make up the game board. Contains getters and setters to retrieve and update
+ * information for the corresponding cell such as if it's part of fill, it's location, etc.
+ */
 public class Cell {
     private int currentNumber;
     private boolean isMiddle;

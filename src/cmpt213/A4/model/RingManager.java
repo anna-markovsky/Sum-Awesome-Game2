@@ -111,7 +111,7 @@ public class RingManager {
     }
 
     public List<Ring> getEquippedRings() {
-        return equippedRings; // defensive copy
+        return new ArrayList<>(equippedRings); // defensive copy
     }
 
     public int calculateTotalMultiplier(int strength) {

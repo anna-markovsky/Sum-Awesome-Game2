@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-
+/**
+ * A class that handles general game play by checking and applying moves done by opponents/player,
+ * retrieving and observing information regarding state of the game, checking game conditions, etc.
+ */
 public class Game {
     public int fillStrength = 0;
     private int turnsUntilAttack;
@@ -30,19 +33,16 @@ public class Game {
     public Game() {
         generateOpponents();
         setTurnsUntilAttack();
-
         ringManager.equipRing(ringManager.getAllRings().get(0));
         ringManager.equipRing(ringManager.getAllRings().get(0));
         ringManager.equipRing(ringManager.getAllRings().get(0));
         this.weaponManager = new WeaponManager(this);
         this.currentMaxBound = DEFAULT_MAX_BOUND;
-
     }
 
     public void equipRing(int ringIndex){
         ringManager.equipRing(ringManager.getAllRings().get(ringIndex));
     }
-
     public List<Ring> getAllRingsList(){
         return ringManager.getAllRings();
     }
@@ -106,8 +106,6 @@ public class Game {
         turnsUntilAttack -= 1;
         notifyMoveObservers();
     }
-
-
     public Opponent selectRandomOpponent(){
         List<Opponent> opponents = getAliveOpponents();
 
@@ -118,12 +116,9 @@ public class Game {
     public boolean opponentReadyForAttack() {
         return (turnsUntilAttack == 0);
     }
-
-
     public void updateFillTime(double durationSeconds) {
         fillConditions.setSecondsTaken(durationSeconds);
     }
-
     public void updateMiddleCell(Cell cell) {
         board.replaceMiddleCell(cell);
     }
@@ -165,20 +160,15 @@ public class Game {
         }
         throw new IllegalArgumentException();
     }
-
     public void resetGameConditions(boolean isMatchComplete) {
         if(isMatchComplete) {
             this.currentMaxBound = DEFAULT_MAX_BOUND;
-
         }
         board = new GameBoard(currentMaxBound);
         fillStrength = 0;
         fillConditions = new FillConditions();
         setTurnsUntilAttack();
     }
-
-
-
     public void startNewMatch() {
         resetGameConditions(true);
         generateOpponents();
@@ -191,47 +181,39 @@ public class Game {
         }
         return false;
     }
-
     public void attackPlayer() {
-        //notifyObservers();
         Opponent opponent = selectRandomOpponent();
         player.decreaseHealth(opponent.getDamage());
         setTurnsUntilAttack();
         notifyMoveObservers();
-
-       // notifyObservers();
-
     }
 
     public List<String> getActivationMsgs(){
         return ringManager.getActivationMsgs();
     }
-
     public void attackOpponent() {
         fillStrength = ringManager.calculateTotalMultiplier(fillStrength);
-
         Weapon equippedWeapon = player.getWeapon();
         boolean activated = equippedWeapon.getWeaponCondition().isActive(fillConditions);
-
         if (activated) {
             applyWeaponDamage(equippedWeapon);
-
         }
         List<Double> percentDamageOpponents = equippedWeapon.getPercentDamageOpponents();
-        //first attack selected opponent based on index
         int opponentIndex = fillConditions.getLastSelectedColIndex();
         Opponent selectedOpponent = opponents.get(opponentIndex);
         notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
+        //selectedOpponent.takeDamage(fillStrength);
+        if(selectedOpponent.getHealth() - fillStrength < 0) {
+            player.addDamageDealt(selectedOpponent.getHealth());
+            selectedOpponent.takeDamage(selectedOpponent.getHealth());
 
-        selectedOpponent.takeDamage(fillStrength);
-        //notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
-        player.addDamageDealt(fillStrength);
-        //notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
-
+        }
+        else {
+            selectedOpponent.takeDamage(fillStrength);
+            player.addDamageDealt(fillStrength);//TODO fixt his
+        }
         notifyMoveObservers();
-
     }
-
     private void applyWeaponDamage(Weapon equippedWeapon) {
         List<Double> percentDamageOpponents = equippedWeapon.getPercentDamageOpponents();
         double[] damageRecieved = new double[percentDamageOpponents.size()];
@@ -319,6 +301,4 @@ public class Game {
             observer.getAttackInformation(weaponName, damages);
         }
     }
-
-
 }

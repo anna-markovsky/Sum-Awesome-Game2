@@ -27,54 +27,35 @@ public class StatsTracker {
         registerAsAttackInfoObserver();
     }
     public void addFillsCompleted() {
-
-        //this.fillsCompleted = game.getPlayer().getNumFills();
         this.fillsCompleted++;
     }
     public void addMatch(boolean matchWon) {
         if(matchWon) {
-            //matchesWon += 1;
             matches.merge("Won", 1, Integer::sum);
-
-            //matches.put("Won", matchesWon);
         }
         else {
-            //matchesLost += 1;
-            //matches.put("Lost", matchesLost);
             matches.merge("Lost", 1, Integer::sum);
-
         }
-
-
     }
-
     public void updateDamageDealt() {
         this.damageDone = game.getPlayer().getDamageDealt();
-
         totalDamage.put("Done", damageDone);
-        System.out.println("fill damage stats: " + damageDone);
     }
     public void updateDamageReceived() {
         this.damageReceived = game.getPlayer().getDamageReceived();
-        //System.out.println("damage received stats: " + game.getPlayer().getDamageReceived());
         totalDamage.put("Received", damageReceived);
-
     }
-
     public void updateEquipment() {
         String weaponName = game.getPlayer().getWeapon().getWeaponName();
         if(!weaponName.equals("")) {
             equipmentActivations.merge(weaponName, 1, Integer::sum);
         }
     }
-
     private void registerAsObserver() {
         game.addObserver(new PlayerAttackObserver() {
             @Override
             public void attackStateChanged() {
                 addFillsCompleted();
-                updateEquipment();
-                //printStats();
             }
         });
     }
@@ -82,11 +63,8 @@ public class StatsTracker {
         game.addMoveObserver(new PlayerMoveObserver() {
             @Override
             public void moveStateChanged() {
-                //addFillsCompleted();
-                //updateAttacks();
                 updateDamageDealt();
                 updateDamageReceived();
-                //printStats();
             }
         });
     }
@@ -102,36 +80,30 @@ public class StatsTracker {
         game.addAttackInfoObserver(new AttackInfoObserver() {
             @Override
             public void getAttackInformation(String weaponName, double[] damageRecieved) {
+                updateEquipment();
                 printAttackInfo(weaponName, damageRecieved);
             }
-
             @Override
             public void getFillAttackInformation(int damageRecieved, Opponent selectedOpponent, int opponentIndex) {
                 printFillAttackInfo(damageRecieved, selectedOpponent, opponentIndex);
             }
         });
     }
-
     private void registerAsUserInterfaceObserver() {
         TextUI.addUserInterfaceObserver(new UserInterfaceObserver() {
             @Override
             public void printRequestFromUI() {
                 printStats();
             }
-
         });
     }
     public void printFillAttackInfo(int damageRecieved,Opponent selectedOpponent, int opponentIndex) {
         System.out.println("Fill strength " + damageRecieved + ".");
         if(selectedOpponent.getHealth() == 0) {
-            //change damage
-            //if(selectedOpponent.getHealth() - selectedOpponent.getDamage() < 0) {
             System.out.println("Missed " +  opponentsCorrespondingToIndex[opponentIndex] + " character.");
-            //System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
-            //        + damageRecieved + " damage.");
         }
         else {
-            if (selectedOpponent.getHealth() - selectedOpponent.getDamage() < 0) {
+            if (selectedOpponent.getHealth() - damageRecieved < 0) {
                 System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
                         + selectedOpponent.getHealth() + " damage.");
             } else {
@@ -140,11 +112,9 @@ public class StatsTracker {
             }
         }
     }
-
     public void printAttackInfo(String weaponName, double[] damageRecieved) {
-    /*    for (int i =0; i < damageRecieved.length; i++) {
+        for (int i =0; i < damageRecieved.length; i++) {
             System.out.println(weaponName + " targets " + opponentsCorrespondingToIndex[i]);
-
             if((int) damageRecieved[i] == 0) {
                 System.out.println("Misses " + opponentsCorrespondingToIndex[i] + " character.");
             }
@@ -152,15 +122,14 @@ public class StatsTracker {
                 System.out.println("Hits " + opponentsCorrespondingToIndex[i]
                         + " character for " + (int) damageRecieved[i] + ".");
             }
-        }*/
+        }
     }
-
     public void printStats() {
         int index = 0;
         System.out.println(events.get(index));
         index++;
         for (String i : equipmentActivations.keySet()) {
-            System.out.println( i + "  " + equipmentActivations.get(i));//TODO fix this
+            System.out.println( i + " " + equipmentActivations.get(i));
         }
         System.out.println(events.get(index));
         index++;
@@ -173,6 +142,5 @@ public class StatsTracker {
             System.out.println(i + " " +totalDamage.get(i));
         }
         System.out.println(events.get(index) + " " + fillsCompleted);
-
     }
 }

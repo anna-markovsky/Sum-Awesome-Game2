@@ -18,23 +18,15 @@ public class TextUI {
     private boolean timingStarted = false;
     private Game game;
     private static List<UserInterfaceObserver> observers = new ArrayList<UserInterfaceObserver>();
-
-    //public Cell lastSelectedCell;
-
     public TextUI(Game game) {
         this.game = game;
     }
-
     public void playGame() {
         game.startNewMatch();
         displayWelcome();
         startTime = System.nanoTime();
         while (gameRunning()) {
-            //startTime = System.nanoTime();
-
             displayBoardWithInfo();
-            //startTime += System.nanoTime();
-
             doPlayerTurn();
             if (game.playerReadyForAttack()) {
                 long endTime = System.nanoTime();
@@ -46,7 +38,6 @@ public class TextUI {
                 printRingActivationMsgs();
                 game.resetGameConditions(false);
                 startTime = System.nanoTime();
-
             }
             if (game.opponentReadyForAttack()) {
                 game.attackPlayer();
@@ -54,22 +45,18 @@ public class TextUI {
             doWonOrLost();
         }
     }
-
     private void printRingActivationMsgs(){
         List<String> msgs = game.getActivationMsgs();
         for (String msg : msgs) {
             System.out.println(msg);
         }
     }
-
     private void displayRingBonus(){
         System.out.println();
     }
     private boolean gameRunning() {
         return true;
-        //return !game.hasUserWon() && !game.hasOpponentWon();
     }
-
     private void displayWelcome() {
         System.out.println("------------------------");
         System.out.println("Welcome to Sum-Awesome!");
@@ -91,7 +78,6 @@ public class TextUI {
             System.out.print(output);
         });
     }
-
     public void displayPlayerInfo() {
         Player player = game.getPlayer();
         String format = "[" + player.getPlayerHealth() + "]";
@@ -100,10 +86,8 @@ public class TextUI {
         String secondHalf = "Fill Strength: " + game.fillStrength;
         System.out.println(firstHalf + secondHalf);
     }
-
     public void displayBoard() {
         System.out.println();
-
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
             for (int col = 0; col < GameBoard.NUM_COLS; col++) {
@@ -115,14 +99,12 @@ public class TextUI {
                 } else {
                     String format = NOTFILL_SYMBOL + symbol + NOTFILL_SYMBOL;
                     output += String.format("%-7s", format);
-
                 }
             }
             System.out.println(output);
             System.out.println();
         }
     }
-
     private int getPlayerMove() {
         Scanner scanner = new Scanner(System.in);
 
@@ -130,8 +112,6 @@ public class TextUI {
                     System.out.print("Enter a sum (or 'gear', 'cheat', 'stats', 'new'): ");
                     String input = scanner.nextLine().trim().toLowerCase();
                     String inputWithArgs[] = input.split("\\s+", 2);
-
-            switch (inputWithArgs[0]) {
 
             switch (inputWithArgs[0]) {
                 case "gear":
@@ -173,7 +153,6 @@ public class TextUI {
             }
         }
     }
-
     private void handleCheatArguments(String args) {
         String inputWithArgs[] = args.split("\\s+");
 
@@ -209,7 +188,6 @@ public class TextUI {
         }catch (NumberFormatException e) {
             System.out.println("Invalid entry. Please enter a number or a valid command.");
         }
-
     }
     private void selectWeaponToEquip(String args) {
         try {
@@ -248,16 +226,11 @@ public class TextUI {
                 startTime = System.nanoTime();
                 timingStarted = true;
             }
-
             game.updateMiddleCell(matchingCell);
             game.updateMatchingCellPosition(matchingCell);
-
-            //this.lastSelectedCell = matchingCell;
-            //return matchingCell;
         } catch (IllegalArgumentException e) {
             game.attackPlayer();
         }
-        //return null;
     }
 
 
@@ -324,7 +297,6 @@ public class TextUI {
         }
     }
 
-
     /*
      * Functions to support being observable.
      * ------------------------------------------------------
@@ -332,7 +304,6 @@ public class TextUI {
     public static void addUserInterfaceObserver(UserInterfaceObserver observer) {
         observers.add(observer);
     }
-
     private static void notifyUIObservers() {
         for (UserInterfaceObserver observer : observers) {
             observer.printRequestFromUI();

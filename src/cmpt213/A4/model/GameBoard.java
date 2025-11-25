@@ -1,5 +1,9 @@
 package cmpt213.A4.model;
 import java.util.*;
+/**
+ * A class for managing, generating, the grid for the GameBoard consisting of cells that make up a fill.
+ * Fulfills various cell operations such as updating cell state.
+ */
 public class GameBoard {
     private final int MIDDLE_INDEX_ROW = 1;
     private final int MIDDLE_INDEX_COL = 1;
@@ -16,7 +20,6 @@ public class GameBoard {
     public Cell getCell(int row, int col) {
         return board[row][col];
     }
-    //initialize game board
     public GameBoard(int maxBound) {
         this.maxBound = maxBound;
         for (int row = 0; row < NUM_ROWS; row++) {
@@ -29,27 +32,20 @@ public class GameBoard {
             }
         }
     }
-
     public Cell getMiddleCellState(){
-
         return board[MIDDLE_INDEX_ROW][MIDDLE_INDEX_COL];
     }
-
     public void replaceMiddleCell(Cell cell) {
         cell.setFill(false);
         board[MIDDLE_INDEX_ROW][MIDDLE_INDEX_COL] = cell;
-
     }
-
     public void replaceMatchingCell(Cell cell) {
         int row = cell.getRowIndex();
         int col = cell.getColumnIndex();
-
         Cell newCell = new Cell(row, col, maxBound);
         newCell.setFill(true);
         board[row][col] = newCell;
     }
-
     public boolean isWholeBoardFill(){
         for  (int row = 0; row < NUM_ROWS; row++) {
             for  (int col = 0; col < NUM_COLS; col++) {

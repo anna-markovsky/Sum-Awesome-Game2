@@ -1,7 +1,10 @@
 package cmpt213.A4.model;
 import cmpt213.A4.model.*;
+/**
+ * A class for representing the player and handles operations such as equipping gear, updating health/damage
+ * dealt and checking if win/lose condition is met.
+ */
 public class Player {
-    //private List<>
     private final int DEFAULT_HEALTH = 400;
     private final int MAX_NUM_RINGS = 3;
     private int health;
@@ -9,7 +12,6 @@ public class Player {
     private Weapon weaponEquipped;
     private int damageDealt = 0;
     private int numFills;
-    //private Rings.Ring[] rings;
 
     public Player() {
         NullWeapon nullWeapon = new NullWeapon();
@@ -27,14 +29,10 @@ public class Player {
         this.damageDealt = 0;
         this.damageReceived = 0;
         this.numFills = 0;
-        //rings = new Rings.Ring[3];
-        //rings[0] = new Rings.NullRing();
     }
     public int getNumFills() {
-
         return numFills;
     }
-
     public void addNumFills() {
         this.numFills = numFills + 1;
     }
@@ -42,10 +40,8 @@ public class Player {
         this.weaponEquipped = weapon;
     }
     public void dropWeapon(){
-
         this.weaponEquipped = new NullWeapon();
     }
-
     public Weapon getWeapon() {
         return weaponEquipped;
     }
@@ -60,31 +56,18 @@ public class Player {
     }
     public void addDamageDealt(int damageDealt) {
         this.damageDealt += damageDealt;
-
     }
     public void decreaseHealth(int damageReceived){
-       // if (this.health - damageReceived==0) {
-       //     this.damageReceived -= health;
-        //    this.health = 0;
-        //}
-        //else {
             this.health -= damageReceived;
             this.damageReceived += damageReceived;
-        //}
-
     }
-
     public int getPlayerHealth(){
         return health;
     }
     public void resetPlayerHealth() {
         health = DEFAULT_HEALTH;
     }
-
     public boolean didPlayerLose(){
-
         return health <= 0;
     }
-
-
 }
