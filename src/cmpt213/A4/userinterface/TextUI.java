@@ -223,9 +223,13 @@ public class TextUI {
     }
 
     private void selectRingToEquip(String[] args){
-        for(int i = 1; i < 4; i++){
-            game.unequipRing(i - 1);
-            game.equipRing(Integer.parseInt(args[i]));
+        if(args.length < 4){
+            System.out.println("Please provide 3 ring numbers");
+        }else{
+            for(int i = 1; i < 4; i++){
+                game.unequipRing(0);
+                game.equipRing(Integer.parseInt(args[i]));
+            }
         }
     }
 
