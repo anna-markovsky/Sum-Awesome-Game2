@@ -56,7 +56,7 @@ public class StatsTracker {
     }
     public void updateDamageReceived() {
         this.damageReceived = game.getPlayer().getDamageReceived();
-        System.out.println("damage recieved stats: " + game.getPlayer().getDamageReceived());
+        //System.out.println("damage received stats: " + game.getPlayer().getDamageReceived());
         totalDamage.put("Received", damageReceived);
 
     }
@@ -74,7 +74,7 @@ public class StatsTracker {
             public void attackStateChanged() {
                 addFillsCompleted();
                 updateEquipment();
-                printStats();
+                //printStats();
             }
         });
     }
@@ -124,16 +124,25 @@ public class StatsTracker {
     public void printFillAttackInfo(int damageRecieved,Opponent selectedOpponent, int opponentIndex) {
         System.out.println("Fill strength " + damageRecieved + ".");
         if(selectedOpponent.getHealth() == 0) {
+            //change damage
+            //if(selectedOpponent.getHealth() - selectedOpponent.getDamage() < 0) {
             System.out.println("Missed " +  opponentsCorrespondingToIndex[opponentIndex] + " character.");
+            //System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
+            //        + damageRecieved + " damage.");
         }
         else {
-            System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
-                    + damageRecieved + " damage.");
+            if (selectedOpponent.getHealth() - selectedOpponent.getDamage() < 0) {
+                System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
+                        + selectedOpponent.getHealth() + " damage.");
+            } else {
+                System.out.println("Hits " + opponentsCorrespondingToIndex[opponentIndex] + " character for "
+                        + damageRecieved + " damage.");
+            }
         }
     }
 
     public void printAttackInfo(String weaponName, double[] damageRecieved) {
-        for (int i =0; i < damageRecieved.length; i++) {
+    /*    for (int i =0; i < damageRecieved.length; i++) {
             System.out.println(weaponName + " targets " + opponentsCorrespondingToIndex[i]);
 
             if((int) damageRecieved[i] == 0) {
@@ -143,7 +152,7 @@ public class StatsTracker {
                 System.out.println("Hits " + opponentsCorrespondingToIndex[i]
                         + " character for " + (int) damageRecieved[i] + ".");
             }
-        }
+        }*/
     }
 
     public void printStats() {

@@ -41,7 +41,7 @@ public class TextUI {
                 long elapsedTimeNanos = endTime - startTime;
                 double durationSeconds = (double) elapsedTimeNanos / 1_000_000_000.0;
                 game.updateFillTime(durationSeconds);
-                System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
+                //System.out.println("Method execution time: " + game.getFillConditions().getSecondsTaken() + " seconds");
                 game.attackOpponent();
                 printRingActivationMsgs();
                 game.resetGameConditions(false);
@@ -87,7 +87,7 @@ public class TextUI {
         List<Opponent> opponents = game.getOpponents();
         opponents.stream().forEach(opponent -> {
             String format = "[" + opponent.getHealth() + "]";
-            String output = String.format("%-7s", format);
+            String output = String.format("%-7.5s", format);
             System.out.print(output);
         });
     }
@@ -106,8 +106,6 @@ public class TextUI {
 
         for (int row = 0; row < GameBoard.NUM_ROWS; row++) {
             String output = "";
-            output += String.format("%-1s", output);
-
             for (int col = 0; col < GameBoard.NUM_COLS; col++) {
                 Cell cell = game.getCellState(row, col);
                 int symbol = cell.getCurrentNumber();
@@ -132,6 +130,8 @@ public class TextUI {
                     System.out.print("Enter a sum (or 'gear', 'cheat', 'stats', 'new'): ");
                     String input = scanner.nextLine().trim().toLowerCase();
                     String inputWithArgs[] = input.split("\\s+", 2);
+
+            switch (inputWithArgs[0]) {
 
             switch (inputWithArgs[0]) {
                 case "gear":
@@ -209,8 +209,8 @@ public class TextUI {
         }catch (NumberFormatException e) {
             System.out.println("Invalid entry. Please enter a number or a valid command.");
         }
-    }
 
+    }
     private void selectWeaponToEquip(String args) {
         try {
             int weaponNum = Integer.parseInt(args);
@@ -229,14 +229,12 @@ public class TextUI {
             System.out.println("Invalid entry. No weapon exists for provided input.");
         }
     }
-
     private void selectRingToEquip(String[] args){
         for(int i = 1; i < 4; i++){
             game.unequipRing(i - 1);
             game.equipRing(Integer.parseInt(args[i]));
         }
     }
-
     private void doPlayerTurn() {
         int sum = getPlayerMove();
         try {

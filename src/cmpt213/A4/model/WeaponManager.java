@@ -153,8 +153,7 @@ public class WeaponManager {
                 new WeaponCondition() {
                     @Override
                     public boolean isActive(FillConditions fillConditions) {
-                        System.out.println("seconds taken" + fillConditions.getSecondsTaken());
-                        return fillConditions.checkTime(20);
+                        return fillConditions.checkTime(10);
                     }
                 }
         );
@@ -171,7 +170,7 @@ public class WeaponManager {
                 new WeaponCondition() {
                     @Override
                     public boolean isActive(FillConditions fillConditions) {
-                        return fillConditions.checkTime(30);
+                        return fillConditions.checkTime(15);
                     }
                 }
         );

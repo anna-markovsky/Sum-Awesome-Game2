@@ -24,12 +24,6 @@ public class Game {
     private List<PlayerMoveObserver> moveObservers = new ArrayList<PlayerMoveObserver>();
     private List<MatchCompleteObserver> matchObservers = new ArrayList<>();
     private List<AttackInfoObserver> attackInfoObservers = new ArrayList<>();
-    private long gameTime;
-    public long getGameTime() {
-        return gameTime;
-    }
-
-
     private final WeaponManager weaponManager;
     public int currentMaxBound;
     private RingManager ringManager = new RingManager();
@@ -90,7 +84,6 @@ public class Game {
     public void unequipRing(int index){
         ringManager.unequipRing(index);
     }
-
     public List<Opponent> getOpponents() {
         return opponents;
     }
@@ -128,8 +121,6 @@ public class Game {
 
 
     public void updateFillTime(double durationSeconds) {
-
-        System.out.println("DEBUG: updateFillTime called, seconds = " + durationSeconds);
         fillConditions.setSecondsTaken(durationSeconds);
     }
 
@@ -148,14 +139,6 @@ public class Game {
         setCurrentMaxBound(maxbound);
         board.setMaxBound(maxbound);
     }
-
-    //function for player move
-    //first check if there are any matching cells
-    //if 1 matching cell, add current cell to fill, and replace middle with matching cell
-    //and replace matching cell with random cell.
-    //if there is >1 matching cell, do same steps but randomly select matching cell out of all matches
-    //then check if the whole board is part of the fill if yes attack
-    // if sum is wrong, then make the opponent attack
     public Cell getMatchingCell(int userInput) {
         Cell middleCell = board.getMiddleCellState();
         int middleValue = middleCell.getCurrentNumber();
@@ -188,7 +171,6 @@ public class Game {
             this.currentMaxBound = DEFAULT_MAX_BOUND;
 
         }
-        //this.currentMaxBound = DEFAULT_MAX_BOUND;
         board = new GameBoard(currentMaxBound);
         fillStrength = 0;
         fillConditions = new FillConditions();
@@ -199,7 +181,6 @@ public class Game {
 
     public void startNewMatch() {
         resetGameConditions(true);
-        //player.dropWeapon();
         generateOpponents();
         player.resetPlayerHealth();
     }
@@ -240,10 +221,12 @@ public class Game {
         //first attack selected opponent based on index
         int opponentIndex = fillConditions.getLastSelectedColIndex();
         Opponent selectedOpponent = opponents.get(opponentIndex);
+        notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
 
         selectedOpponent.takeDamage(fillStrength);
+        //notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
         player.addDamageDealt(fillStrength);
-        notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
+        //notifyFillAttackInfoObservers(fillStrength, selectedOpponent, opponentIndex);
 
         notifyMoveObservers();
 
