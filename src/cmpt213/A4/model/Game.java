@@ -81,10 +81,9 @@ public class Game {
         return ringManager.getEquippedRings();
     }
 
-    public void unequipRing(Ring ring){
-        ringManager.unequipRing(ring);
+    public void unequipRing(int index){
+        ringManager.unequipRing(index);
     }
-
     public List<Opponent> getOpponents() {
         return opponents;
     }
