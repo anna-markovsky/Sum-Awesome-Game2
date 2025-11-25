@@ -80,6 +80,7 @@ public class TextUI {
         displayBoard();
         displayPlayerInfo();
     }
+
     public void displayHealthOpponents() {
         List<Opponent> opponents = game.getOpponents();
         opponents.stream().forEach(opponent -> {
@@ -229,7 +230,6 @@ public class TextUI {
             System.out.println("Invalid sum. Opponent will attack.");
             game.attackPlayer();
         }
-        //return null;
     }
 
 
@@ -256,20 +256,23 @@ public class TextUI {
                 }
                 System.out.println("Which ring do you want to replace? (1-3): ");
                 String x = scanner.nextLine();
-                if(x.equals("1")){
-                    Ring unequipRing = equippedRings.get(0);
-                    game.unequipRing(unequipRing);
-                    game.equipRing(ringIndex);
-                }else if(x.equals("2")){
-                    Ring unequipRing = equippedRings.get(1);
-                    game.unequipRing(unequipRing);
-                    game.equipRing(ringIndex);
-                }else if(x.equals("3")){
-                    Ring unequipRing = equippedRings.get(2);
-                    game.unequipRing(unequipRing);
-                    game.equipRing(ringIndex);
-                }else{
-                    System.out.println("Invalid number. No rings replaced.");
+                switch (x) {
+                    case "1" -> {
+                        Ring unequipRing = equippedRings.get(0);
+                        game.unequipRing(unequipRing);
+                        game.equipRing(ringIndex);
+                    }
+                    case "2" -> {
+                        Ring unequipRing = equippedRings.get(1);
+                        game.unequipRing(unequipRing);
+                        game.equipRing(ringIndex);
+                    }
+                    case "3" -> {
+                        Ring unequipRing = equippedRings.get(2);
+                        game.unequipRing(unequipRing);
+                        game.equipRing(ringIndex);
+                    }
+                    default -> System.out.println("Invalid number. No rings replaced.");
                 }
             }
         }
@@ -287,7 +290,6 @@ public class TextUI {
             assert false;
         }
     }
-
 
     /*
      * Functions to support being observable.
